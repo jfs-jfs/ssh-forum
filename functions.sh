@@ -27,7 +27,7 @@ function create_post_body()
         content=${content:0:1024}
 
         ## Clean input and set break lines
-        content=$(printf "$content" | sed -e 's/[\"\\\;\<\>]/ /g' -e 's/'"'"'/'"\\'"'/g' -e '/^$/d')
+        content=$(printf "$content" | sed -e 's/[\"\\\;\<]/ /g' -e 's/'"'"'/'"\\'"'/g' -e '/^$/d')
 
         if [ ${#content} -eq 0 ];
         then
@@ -58,9 +58,10 @@ function create_post_body()
     if [ $debug -e 0 ];
     then
         content=$(../bin/./postref "$content")
-        echo "$content";exit;
+        content=$(../bin/./greentext "$content")
     else
         content=$(/home/lowlife/bin/./postref "$content")
+        content=$(/home/lowlife/bin/./greentext "$content")
     fi
 
 }
