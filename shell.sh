@@ -9,15 +9,12 @@ bye_msg="[> This is entropy, and it is taking over one bit at a time..."
 ip=$(echo $SSH_CLIENT | awk '{ print $1}')
 
 ## Where it is executing
-case $(hostname) in
-
-    "localhost")
+if [ $(hostname) = "localhost" ];
+then
     debug=1
-    ;;
-    *)
+else
     debug=0
-    ;;
-esac
+fi
 
 if [ $debug -eq 0 ];
 then
