@@ -65,28 +65,6 @@ function create_post_body()
 
 }
 
-function get_board_link()
-{
-    case $board in
-    "<Technology>")
-    link='g'
-    ;;
-    "<Cyberpunk>")
-    link='pag'
-    ;;
-    "<Meta>")
-    link='m'
-    ;;
-    "<Meatspace>")
-    link='diy'
-    ;;
-    *)
-    exit
-    ;;
-    esac
-
-}
-
 function add_thread()
 {
     local query="INSERT INTO thread (author,table_id,comment,image_link,title, poster_ip)\
@@ -177,6 +155,31 @@ function new_reply()
         8 60
 }
 
+function get_board_link()
+{
+    case $board in
+    "<The highway>")
+    link='i'
+    ;;
+    "<Meatspace>")
+    link='h'
+    ;;
+    "<Meta>")
+    link='m'
+    ;;
+    "<Programming>")
+    link='c'
+    ;;
+    "<Random>")
+    link='b'
+    ;;
+    *)
+    exit
+    ;;
+    esac
+
+}
+
 function new_thread()
 {
     ## Pick board       --- TODO :: make it dynamic
@@ -184,11 +187,12 @@ function new_thread()
         dialog --backtitle "$banner" \
             --title "...Decisions..."\
             --menu "Please choose a board to create a thread on:"\
-            12 80 4\
-            "<Technology>" "For the discussion of technology and related topics."\
-            "<Cyberpunk>" "Cyberpunk philosophy and ideologies discussion."\
+            13 80 5\
+            "<The highway>" "Share info, doesn't matter the subject."\
+            "<Meatspace>" "Humanities, rants, experiences. Here is the place."\
+            "<Programming>" "Share projects, tips, resources or ask questions."\
             "<Meta>" "For dicussion about the site and updates."\
-            "<Meatspace>" "Post and learn about diy projects or anything."\
+            "<Random>" "Everything else."\
             3>&1 1>&2 2>&3 3>&-\
     )
 
