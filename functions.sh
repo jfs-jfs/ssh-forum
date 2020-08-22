@@ -53,22 +53,18 @@ function create_post_body()
     then
         content=$(../bin/./postref "$content")
         content=$(../bin/./greentext "$content")
+        content=$(../bin/./endline "$content")
     else
         content=$(/home/lowlife/bin/./postref "$content")
         content=$(/home/lowlife/bin/./greentext "$content")
+        content=$(/home/lowlife/bin/./endline "$content")
     fi
-
-    # Change end line for <br>
-    content=$(\
-                printf "$content" |\
-                tr '\n' ';' |\
-                sed -e 's/\;/<br>/g'\
-            )
 
     # Clean the double quotes and single quotes
     content=$(\
         printf "$content" | sed -e 's/\x27/\\\x27/g' -e 's/"/\\"/g'\
     )
+
 
 
 }
@@ -79,7 +75,7 @@ function add_thread()
     VALUES ('$author', (SELECT id FROM board WHERE link = '$link'), '$content', 'img', '$title', '$ip')"
     
     mysql -u$USER -p$PASS $BDNAME -e "$query"
-    if [ $? ]; then
+    if [ $? -eq 1 ]; then
         dialog --backtitle "$banner" \
             --title "...Error..."\
             --msgbox "Something went wrong when commiting your thread...Please report it at https://github.com/analogcity/shell. Thanks!"\
@@ -91,10 +87,10 @@ function add_thread()
         fi
     else
         dialog --backtitle "$banner" \
-        --title "...Commited Changes..."\
-        --sleep 2\
-        --infobox "Your Post has been published successfully."\
-        8 60
+            --title "...Commited Changes..."\
+            --sleep 2\
+            --infobox "Your Post has been published successfully."\
+            8 60
     fi
     content=""
 }
