@@ -26,9 +26,8 @@ function create_post_body()
         content=$(cat /tmp/$id)
         content=${content:0:1024}
 
-        ## Clean input and set break lines
-        content=$(printf "$content" | sed -e 's/[\"\\\;\<]/ /g' -e 's/'"'"'/'"\\'"'/g' -e '/^$/d')
-
+        ## Clean input  from double quotation marks, \, ;, < and empty lines
+        content=$(printf "$content" | sed -e 's/[\"\\\;\<]/ /g' -e '/^$/d')
         if [ ${#content} -eq 0 ];
         then
             dialog --backtitle "$banner"\
@@ -48,14 +47,9 @@ function create_post_body()
 
     done
 
-    content=$(\
-                printf "$content" |\
-                tr '\n' ';' |\
-                sed -e 's/\;/<br>/g'\
-            )
 
-    # Prase the references
-    if [ $debug -e 0 ];
+    ## Prase the input
+    if [ $debug -eq 0 ];
     then
         content=$(../bin/./postref "$content")
         content=$(../bin/./greentext "$content")
@@ -64,6 +58,19 @@ function create_post_body()
         content=$(/home/lowlife/bin/./greentext "$content")
     fi
 
+    # Change end line for <br>
+    content=$(\
+                printf "$content" |\
+                tr '\n' ';' |\
+                sed -e 's/\;/<br>/g'\
+            )
+
+    # Clean the double quotes and single quotes
+    content=$(\
+        printf "$content" | sed -e 's/\x27/\\\x27/g' -e 's/"/\\"/g'\
+    )
+
+
 }
 
 function add_thread()
@@ -71,7 +78,24 @@ function add_thread()
     local query="INSERT INTO thread (author,table_id,comment,image_link,title, poster_ip)\
     VALUES ('$author', (SELECT id FROM board WHERE link = '$link'), '$content', 'img', '$title', '$ip')"
     
-    mysql -u$USER -p$PASS $BDNAME -e "$query" &>/dev/null
+    mysql -u$USER -p$PASS $BDNAME -e "$query"
+    if [ $? ]; then
+        dialog --backtitle "$banner" \
+            --title "...Error..."\
+            --msgbox "Something went wrong when commiting your thread...Please report it at https://github.com/analogcity/shell. Thanks!"\
+            10 60
+
+        if [ $debug -eq 0 ]; then
+            echo "$error";echo "$query";exit
+            
+        fi
+    else
+        dialog --backtitle "$banner" \
+        --title "...Commited Changes..."\
+        --sleep 2\
+        --infobox "Your Post has been published successfully."\
+        8 60
+    fi
     content=""
 }
 
@@ -79,9 +103,28 @@ function add_reply()
 {
     local query="INSERT INTO post (author,thread_id,comment,image_link, poster_ip)\
                 VALUES ( '$author', $thread_n, '$content', 'img', '$ip')"
-    mysql -u$USER -p$PASS $BDNAME -e "$query" &>/dev/null
+
+    mysql -u$USER -p$PASS $BDNAME -e "$query"
+
+    if [ $? -eq 1 ]; then
+
+        if [ $debug -eq 0 ]; then
+            read;printf "$query";exit
+        fi
+
+        dialog --backtitle "$banner" \
+            --title "...Error..."\
+            --msgbox "Something went wrong when commiting your post...Please report it at https://github.com/analogcity/shell. Thanks!"\
+            10 60
+    else
+        mysql -u$USER -p$PASS $BDNAME -e "UPDATE thread set replays = replays + 1 where id = $thread_n" &>/dev/null
+        dialog --backtitle "$banner" \
+            --title "...Commited Changes..."\
+            --sleep 2\
+            --infobox "Your Post has been published successfully."\
+            8 60
+    fi
     content=""
-    mysql -u$USER -p$PASS $BDNAME -e "UPDATE thread set replays = replays + 1 where id = $thread_n" &>/dev/null
     
 }
 
@@ -148,12 +191,6 @@ function new_reply()
     create_post_body
     rm /tmp/$id
     add_reply
-
-    dialog --backtitle "$banner" \
-        --title "...Commited Changes..."\
-        --sleep 2\
-        --infobox "Your Post has been published successfully."\
-        8 60
 }
 
 function get_board_link()
@@ -262,9 +299,4 @@ function new_thread()
     rm /tmp/$id
     add_thread
 
-    dialog --backtitle "$banner" \
-        --title "...Commited Changes..."\
-        --sleep 2\
-        --infobox "Your Thread has been published successfully."\
-        8 60
 }
