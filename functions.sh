@@ -5,7 +5,7 @@ if [ $(hostname) = "localhost" ]; then debug=1; else debug=0;fi
 
 ### QUERIES
 board_query="SELECT id, name FROM board"
-thread_list_query="SELECT id, title, creation, author, replays FROM thread_ssh WHERE table_id=%d"
+thread_list_query="SELECT id, title, creation, author, replays FROM thread_ssh WHERE table_id=%d ORDER BY last_rp DESC"
 thread_query="SELECT id, author, comment, creation FROM post_ssh WHERE thread_id=%d ORDER BY creation"
 thread_op_query="SELECT id, title, author, comment, creation FROM thread_ssh WHERE id=%d"
 add_post_query_web="INSERT INTO post (author,thread_id,comment,image_link, poster_ip) VALUES ( '%s', %d, '%s', 'img', '%s');update thread set replays=replays+1 where id=%d"
@@ -162,7 +162,7 @@ function select_thread()
     thread_n="$(cat /tmp/$usr_id)"
     # echo "t_id:$thread_n ret:$ret empty:$empty";read
 
-    if [ $ret -eq 0 -o $empty -eq 1 ]; then
+    if [ $ret -eq 0 -a $empty -eq 0 ]; then
         # echo "SELECT";read
         thread_id=$thread_n
         level=$(($level+1))
