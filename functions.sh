@@ -264,6 +264,7 @@ function create_post()
 {
     local free=0
     local thread_n=$thread_id
+    local author=""
 
     while [ $free -eq 0 ];
     do
@@ -286,15 +287,27 @@ function create_post()
             new_author=$(tail -n1 /tmp/$usr_id | sed -e 's/[\"\\\;\<\>'"'"']/ /g')
             rm /tmp/$usr_id
         else
-            new_author=$(dialog --max-input 20 --inputbox "[AUTHOR]:" 8 30 "$new_author" 3>&1 1>&2 2>&3 3>&-)
 
+            dialog\
+                --max-input 20\
+                --backtitle "$banner"\
+                --title "...New Reply..."\
+                --ok-label "CONFIRM"\
+                --cancel-label "BACK"\
+                --inputbox "Press <Tab> to get to the buttons.\n[AUTHOR]:"\
+                10 30 "$new_author" 2>/tmp/"$usr_id" || return
+
+            author=$(cat /tmp/$usr_id | sed -e 's/[\"\\\;\<\>'"'"']/ /g')
+            # echo "$author";read
+
+            # new_author=$(dialog --max-input 20 --inputbox "[AUTHOR]:" 8 30 "$new_author" 3>&1 1>&2 2>&3 3>&-)
             # Clean author name
-            new_author=$(echo -e "$new_author" | sed -e 's/[\"\\\;\<\>'"'"']/ /g')
+            # new_author=$(echo -e "$new_author" | sed -e 's/[\"\\\;\<\>'"'"']/ /g')
 
         fi
 
 
-        if [ -z $new_author ]; then
+        if [ -z $author ]; then
         
             dialog --backtitle "$banner" \
                 --title "...Error..."\
@@ -306,7 +319,7 @@ function create_post()
             continue
         fi
 
-        new_author=${new_author:0:20}
+        new_author=${author:0:20}
 
         ## Ask if it looks okay or not
         dialog --backtitle "$banner" \
@@ -316,7 +329,7 @@ function create_post()
             Thread id: $thread_n
             Author: $new_author"\
             8 50 \
-            || (free=0; thread_n=-1)
+            || free=0
     done
 
     ### Create the body of the post
@@ -342,6 +355,7 @@ function create_body()
         dialog  --backtitle "$banner" \
             --title "...What do you have to say? (1k max.)..."\
             --no-cancel\
+            --ok-label "CONFIRM"\
             --max-input 1024\
             --editbox /tmp/$usr_id \
             20 120 2>/tmp/$usr_id
