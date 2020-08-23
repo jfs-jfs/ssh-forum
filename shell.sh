@@ -1,25 +1,7 @@
 #!/bin/bash
 
-## Vars
-version="v0.3"
-banner="[!]Analog City::Posting interface $version[!]"
-author="Pagan"
-bye_msg="[> This is entropy, and it is taking over one bit at a time..."
-### IP of the client
-ip=$(echo $SSH_CLIENT | awk '{ print $1}')
-
-## Where it is executing
-if [ $(hostname) = "localhost" ];
-then
-    debug=1
-else
-    debug=0
-fi
-
-if [ $debug -eq 0 ];
-then
-    ip="123.123.123.132" ## DEBUG
-fi
+# Debug
+if [ $(hostname) = "localhost" ]; then debug=1; else debug=0;fi
 
 ## Functions and files
 if [ $debug -eq 0 ];
@@ -31,39 +13,33 @@ else
     source /home/lowlife/shell/functions.sh
 fi
 
+if [ $debug -eq 0 ];
+then
+    ip="123.123.123.132" ## DEBUG
+fi
 
-##
-# Menus and dialogs to make either a response or start a thread
-##
 
 function main()
 {
 
     ### Welcome message
     welcome
+    # read
 
     while [ 0 ];
     do
-        ## Unique id
-        shell="shell"
-        id=$(date +%s)
-        id=$id$shell
-
 
         ### Menu to pick from op or reply
         get_option
+        # echo "$option";read
 
         ### Switch flow
         case $option in
 
             ## Creating a thread
-            "<Start a thread>")
-            new_thread
-            ;;
-
-            ### Replying a thread-post
-            "<Reply a thread>")
-            new_reply
+            "<Look around>")
+            look_around
+            # read
             ;;
 
             ## TODO
@@ -82,12 +58,15 @@ function main()
                 "Try again"\
                 5 50
             ;;
-            "<Exit>")
+            *)
             clear
-            echo "$bye_msg"
             exit
             ;;
         esac
+
+        # Update ID
+        usr_id="$(date +%s)analog"
+
     done
 }
 
