@@ -399,7 +399,10 @@ function create_body()
         content_web=$(/home/lowlife/bin/./greentext "$content_web")
         content_web=$(/home/lowlife/bin/./endline "$content_web")
 
-        # SSH -- TODO
+        # SSH
+        content_ssh=$(/home/lowlife/bin/./ssh_postref "$content_ssh")
+        content_ssh=$(/home/lowlife/bin/./ssh_greentext "$content_ssh")
+        content_ssh=$(/home/lowlife/bin/./endline "$content_ssh")
     fi
 
     # Clean the double quotes and single quotes
