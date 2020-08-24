@@ -4,7 +4,7 @@
 if [ $(hostname) = "localhost" ]; then debug=1; else debug=0;fi
 
 ### QUERIES
-board_query="SELECT id, name FROM board"
+board_query="SELECT id, name, description FROM board"
 thread_list_query="SELECT id, title, creation, author, replays, pinned FROM thread_ssh WHERE table_id=%d ORDER BY pinned DESC, last_rp DESC LIMIT 25"
 thread_query="SELECT id, author, comment, creation FROM post_ssh WHERE thread_id=%d ORDER BY creation"
 thread_op_query="SELECT id, title, author, comment, creation FROM thread_ssh WHERE id=%d"
@@ -71,21 +71,23 @@ function select_board()
         dialog --backtitle "$backtitle"\
         --title "$title" --cancel-label "BACK"\
         --ok-label "SELECT"\
-        --menu "$msg" 13 80 5\
+        --menu "$msg" 13 100 5\
         )
 
     local boards=$(mysql -B -u$USER -p$PASS $BDNAME -e "$board_query")
     boards=$(echo -e "$boards" | tail +2)
-    # echo e- "$boards"; read
+    echo e- "$boards"; read
 
     while read -r line
     do
         local id=$(echo -e "$line" | cut -d$'\t' -f1)
-        local name=$(echo -e "$line" | cut -d$'\t' -f2)
+        local name="<$(echo -e "$line" | cut -d$'\t' -f2)>$(printf " %.0s" {0..14})";name=${name:0:14}
+        local desc=$(echo -e "$line" | cut -d$'\t' -f3)
+        
 
         # echo -e "$name $desc";sleep 0.2
 
-        options+=("$id" "<$name>")
+        options+=("$id" "$name:: $desc")
     done <<< "$(echo -e "$boards")"
 
     # echo -e "${options[@]}";read
