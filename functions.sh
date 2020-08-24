@@ -5,7 +5,7 @@ if [ $(hostname) = "localhost" ]; then debug=1; else debug=0;fi
 
 ### QUERIES
 board_query="SELECT id, name FROM board"
-thread_list_query="SELECT id, title, creation, author, replays FROM thread_ssh WHERE table_id=%d ORDER BY last_rp DESC"
+thread_list_query="SELECT id, title, creation, author, replays, pinned FROM thread_ssh WHERE table_id=%d ORDER BY pinned DESC, last_rp DESC LIMIT 25"
 thread_query="SELECT id, author, comment, creation FROM post_ssh WHERE thread_id=%d ORDER BY creation"
 thread_op_query="SELECT id, title, author, comment, creation FROM thread_ssh WHERE id=%d"
 add_post_query_web="INSERT INTO post (author,thread_id,comment,image_link, poster_ip) VALUES ( '%s', %d, '%s', 'img', '%s');update thread set replays=replays+1 where id=%d"
@@ -125,17 +125,26 @@ function select_thread()
     if [ -n "$threads" ];then
         while read -r line
         do
+
+
             local id=$(echo -e "$line" | cut -d$'\t' -f1)
             local t_title="$(echo -e "$line" | cut -d$'\t' -f2 )$(printf ' %.0s' {0..40})";t_title=${t_title:0:40}
             local t_creation=$(echo -e "$line" | cut -d$'\t' -f3)
             local t_author="$(echo -e "$line" | cut -d$'\t' -f4)$(printf ' %.0s' {0..10})";t_author=${t_author:0:10}
             local t_replys=$(echo -e "$line" | cut -d$'\t' -f5)
+            local t_pinned=$(echo -e "$line" | cut -d$'\t' -f6)
 
 
-            # echo -e "$id $t_title $t_creation $t_creation $t_author $t_replys";sleep 0.2
-            options+=("$id" "$t_author:: ${t_title^^}$t_creation -- $t_replys")
+            # echo -e "$line";read;
+            # echo -e "id:$id title:$t_title creation:$t_creation author:$t_author replys:$t_replys p:$t_pinned";sleep 0.2
+            if [ $t_pinned -eq 1 ]; then
+                options+=("$id" "$t_author:: \Z4${t_title^^}\Zn$t_creation -- $t_replys")
+            else
+                options+=("$id" "$t_author:: \Z5${t_title^^}\Zn$t_creation -- $t_replys")
+            fi
 
         done <<< "$(echo -e "$threads")"
+        # read
 
     else
         options=("Not a" "Thread in sight...")
