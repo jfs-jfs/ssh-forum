@@ -16,7 +16,7 @@ add_thread_query_web="INSERT INTO thread (author,table_id,comment,image_link,tit
 add_thread_query_ssh="INSERT INTO thread_ssh (author,table_id,comment,image_link,title, poster_ip) VALUES ('%s', %d, '%s', 'img', '%s', '%s')"
 
 ### GLOBALS
-vim_file="# To exit vim press [ESC] : q [ENTER]\# To save the file and exit [ESC] : wq [ENTER]\n# If you want to cancel the post leave this file empty"
+vim_file="# To exit vim press [ESC] : q [ENTER]\n# To save the file and exit [ESC] : wq [ENTER]\n# If you want to cancel the post leave this file empty"
 editor="BASIC"
 version="v1.2"
 banner="[!]Analog City:: Interface $version[!]"
@@ -707,6 +707,7 @@ function pick_editor()
     
     if [ -z "$editor" ]; then editor="BASIC"; fi
     # echo "$editor";read
+    # editor="BASIC"
 }
 
 function get_option()

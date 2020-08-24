@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Script name
+s_name="$(basename $0)"
+
+if [ "$s_name" != "shell.sh" ]; then exit; fi
+if [ $# -ne 0 ]; then exit; fi
+
+
+
 ## Set locale for special chars
 export LC_ALL=en_US.UTF-8 ## bash
 
