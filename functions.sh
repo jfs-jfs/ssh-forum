@@ -29,6 +29,7 @@ usr_id="$(date +%s)analog"
 ip=$(echo $SSH_CLIENT | awk '{ print $1}')
 option=""
 level=0
+refresh_rate=30
 
 
 ### FUNCTIONS
@@ -164,6 +165,7 @@ function select_thread()
     local cmd=(\
             dialog --colors\
                 --backtitle "$backtitle"\
+                --timeout $refresh_rate\
                 --cancel-label "NEW THREAD"\
                 --ok-label "$ok_l"\
                 --extra-button\
@@ -175,7 +177,7 @@ function select_thread()
     local thread_n
     local ret=0
     "${cmd[@]}" "${options[@]}" 2>/tmp/$usr_id || ret=1
-    thread_n="$(cat /tmp/$usr_id)"
+    thread_n="$(cat /tmp/$usr_id)";thread_n="$(echo $thread_n)"
     # echo "t_id:$thread_n ret:$ret empty:$empty";read
 
     if [ $ret -eq 0 -a $empty -eq 0 ]; then
@@ -185,7 +187,7 @@ function select_thread()
     elif [ -z "$thread_n" ]; then
         # echo "new";read
         new_thread
-    else
+    elif [[ ${#thread_n} -lt 7 ]]; then
         thread_id=-1
         level=$(($level-1))
         # echo "BACK";read
