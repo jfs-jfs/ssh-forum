@@ -58,6 +58,10 @@ function look_around()
     level=0
 }
 
+function clean_tmp()
+{
+    rm /tmp/$usr_id
+}
 
 function select_board()
 {
@@ -76,7 +80,7 @@ function select_board()
 
     local boards=$(mysql -B -u$USER -p$PASS $BDNAME -e "$board_query")
     boards=$(echo -e "$boards" | tail +2)
-    echo e- "$boards"; read
+    # echo e- "$boards"; read
 
     while read -r line
     do
@@ -185,6 +189,8 @@ function select_thread()
         level=$(($level-1))
         # echo "BACK";read
     fi
+
+    clean_tmp
 
 }
 # select_board
@@ -348,6 +354,8 @@ function create_post()
     create_body
     rm /tmp/$usr_id
     add_reply
+
+    clean_tmp
 }
 # select_board
 # select_thread
@@ -440,6 +448,7 @@ function create_body()
 
     # printf "[ENTERING DB]:\n$content_ssh";read
 
+    clean_tmp
 }
 
 function add_reply()
@@ -562,6 +571,8 @@ function new_thread()
     create_body
     rm /tmp/$usr_id
     add_thread
+
+    clean_tmp
 }
 
 
