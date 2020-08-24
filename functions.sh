@@ -16,7 +16,9 @@ add_thread_query_web="INSERT INTO thread (author,table_id,comment,image_link,tit
 add_thread_query_ssh="INSERT INTO thread_ssh (author,table_id,comment,image_link,title, poster_ip) VALUES ('%s', %d, '%s', 'img', '%s', '%s')"
 
 ### GLOBALS
-version="v1."
+vim_file="# To exit vim press [ESC] : q [ENTER]\# To save the file and exit [ESC] : wq [ENTER]\n# If you want to cancel the post leave this file empty"
+editor="BASIC"
+version="v1.2"
 banner="[!]Analog City:: Interface $version[!]"
 board_id=-1
 thread_id=-1
@@ -381,34 +383,52 @@ function create_body()
 
     local free=0
     local content=""
+    local ret;
+
+    # echo "$editor";read
+    echo -e "$vim_file" > /tmp/$usr_id
 
     while [ $free -eq 0 ];
     do
         free=1
 
-        dialog  --backtitle "$banner" \
-            --title "...What do you have to say? (1k max.)..."\
-            --cancel-label "BACK"\
-            --ok-label "CONFIRM"\
-            --max-input 1024\
-            --editbox /tmp/$usr_id \
-            20 120 2>/tmp/$usr_id
+        case "$editor" in
 
-        local ret=$?
+            "VIM")
+                vim "/tmp/$usr_id"
+                if [ ! -s "/tmp/$usr_id" ]; then abort_post=1; return ;fi
+            ;;
 
-        # Go back
-        if [ $ret -eq 1 ]; then
-            # Setting abort flag
-            abort_post=1;
-            # echo "abort:$abort_post"; read
-            return;
-        fi
-        
-        content=$(cat /tmp/$usr_id)
+            "BASIC")
+                touch /tmp/$usr_id
+                dialog  --backtitle "$banner" \
+                    --title "...What do you have to say? (1k max.)..."\
+                    --cancel-label "BACK"\
+                    --ok-label "CONFIRM"\
+                    --max-input 1024\
+                    --editbox /tmp/$usr_id \
+                    20 120 2>/tmp/$usr_id
+                ret=$?
+                # Go back
+                if [ $ret -eq 1 ]; then
+                    # Setting abort flag
+                    abort_post=1;
+                    # echo "abort:$abort_post"; read
+                    return;
+                fi
+            ;;
+
+            *)
+                echo "FUCKED UP";exit
+            ;;
+
+        esac
+
+        content=$(cat -s /tmp/$usr_id)
         content=${content:0:1024}
 
         ## Clean input  from double quotation marks, \, ;, < and double empty lines
-        content=$(printf "$content" | sed -e 's/[\\\;\<]/ /g' | cat -s)
+        content=$(printf "$content" | sed -e 's/[\\\;\<]/ /g')
 
         if [ ${#content} -eq 0 ];
         then
@@ -673,6 +693,22 @@ function welcome()
         10 60
 }
 
+function pick_editor()
+{
+    editor=$(dialog --backtitle "$banner"\
+        --title "...Editor..."\
+        --no-cancel\
+        --menu "What do you want to use to edit your posts?"\
+        10 50 2\
+        "BASIC" "Normal and easy to use editor"\
+        "VIM"   "The good choice"\
+        3>&1 1>&2 2>&3 3>&-\
+        )
+    
+    if [ -z "$editor" ]; then editor="BASIC"; fi
+    # echo "$editor";read
+}
+
 function get_option()
 {
     option=$(\
@@ -682,6 +718,7 @@ function get_option()
             --menu "Please choose one option:"\
             12 80 4\
             "<Look around>"     "Surf the system."\
+            "<Pick editor>"     "Pick the editor to use."\
             "<Exit>"            "Exit the system."\
             3>&1 1>&2 2>&3 3>&-\
     )

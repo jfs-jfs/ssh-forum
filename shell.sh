@@ -45,6 +45,11 @@ function main()
             # read
             ;;
 
+            "<Pick editor>")
+            pick_editor
+            # read
+            ;;
+
             ## TODO
             "<Admin Tools>")
             dialog --backtitle "$banner" \
