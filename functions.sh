@@ -24,6 +24,7 @@ new_author="Pagan"
 new_title=""
 content_web=""
 content_ssh=""
+abort_post=0
 usr_id="$(date +%s)analog"
 ip=$(echo $SSH_CLIENT | awk '{ print $1}')
 option=""
@@ -365,9 +366,9 @@ function create_post()
     touch /tmp/$usr_id
     create_body
     rm /tmp/$usr_id
+    clean_tmp
     add_reply
 
-    clean_tmp
 }
 # select_board
 # select_thread
@@ -385,11 +386,21 @@ function create_body()
 
         dialog  --backtitle "$banner" \
             --title "...What do you have to say? (1k max.)..."\
-            --no-cancel\
+            --cancel-label "BACK"\
             --ok-label "CONFIRM"\
             --max-input 1024\
             --editbox /tmp/$usr_id \
             20 120 2>/tmp/$usr_id
+
+        local ret=$?
+
+        # Go back
+        if [ $ret -eq 1 ]; then
+            # Setting abort flag
+            abort_post=1;
+            # echo "abort:$abort_post"; read
+            return;
+        fi
         
         content=$(cat /tmp/$usr_id)
         content=${content:0:1024}
@@ -465,6 +476,11 @@ function create_body()
 
 function add_reply()
 {
+    # User aborted?
+    if [ $abort_post -eq 1 ]; then
+        abort_post=0
+        return
+    fi
 
     # Web
     local query=$(printf "$add_post_query_web" "$new_author" "$thread_id" "$content_web" "$ip" "$thread_id")
@@ -590,6 +606,12 @@ function new_thread()
 
 function add_thread()
 {
+    # User aborted?
+    if [ $abort_post -eq 1 ]; then
+        abort_post=0;
+        return
+    fi
+
     # Web
     local query=$(printf "$add_thread_query_web" "$new_author" "$board_id" "$content_web" "$new_title" "$ip")
     mysql -u$USER -p$PASS $BDNAME -e "$query"
