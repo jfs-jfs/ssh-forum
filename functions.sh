@@ -252,25 +252,37 @@ function watch_thread()
 
     # read
 
-
-    local reply=0
     dialog\
-        --extra-button\
-        --extra-label "REPLY"\
+        --extra-label "REFRESH" --extra-button\
         --ok-label "BACK"\
+        --cancel-label "REPLY"\
         --colors\
         --backtitle "$backtitle"\
         --title "$title"\
-        --msgbox "$body" 40 120 || reply=1
+        --yesno "$body" 40 120
 
-    if [ $reply -eq 1 ]; then
-        # echo "Create a rply"
-        create_post
-    else
-        # Back to thread selection
-        level=$(($level-1))
-        thread_id=-1
-    fi
+    # read
+    local ret=$?
+    # $ret;
+
+    case $ret in
+        0)
+            # BACK
+            # echo 'BACK';read
+            level=$(($level-1))
+            thread_id=-1
+            ;;
+        3)
+            # REPLY
+            # echo 'REFRESH';read
+            # Do nothing, will reload this function
+            ;;
+        *)
+            # REPLY
+            # echo 'REPLY'; read
+            create_post
+        ;;
+    esac
 
 }
 # select_board
