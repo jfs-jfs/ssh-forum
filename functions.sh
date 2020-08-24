@@ -233,7 +233,7 @@ function watch_thread()
     # Get and format POSTS
     local posts=$(mysql -B -u$USER -p$PASS $BDNAME -e "$query")
     posts=$(echo -e "$posts" | tail +2)
-    # echo -e "$posts"; read
+    echo -e "$posts"; read
 
     while read -r line
     do
@@ -243,7 +243,7 @@ function watch_thread()
         local p_creation=$(echo -e "$line" | cut -d$'\t' -f4)
         local ln=""
 
-        # echo -e "[EXITING DB]:\n$id $p_creation $p_author\n$p_msg";sleep 0.2
+        echo -e "[EXITING DB]:\n$id $p_creation $p_author\n$p_msg";sleep 0.2
         
         ln=" \n     \Z4\Zr\Zb[ID]:$id[AUTHOR]:$p_author[CREATION]:$p_creation\Zn\n"
 
@@ -251,7 +251,7 @@ function watch_thread()
 
     done <<< "$(echo -e "$posts")"
 
-    # read
+    read
 
     dialog\
         --extra-label "REFRESH" --extra-button\
@@ -405,8 +405,8 @@ function create_body()
         content=$(cat /tmp/$usr_id)
         content=${content:0:1024}
 
-        ## Clean input  from double quotation marks, \, ;, < and empty lines
-        content=$(printf "$content" | sed -e 's/[\\\;\<]/ /g' -e '/^$/d')
+        ## Clean input  from double quotation marks, \, ;, < and double empty lines
+        content=$(printf "$content" | sed -e 's/[\\\;\<]/ /g' | cat -s)
 
         if [ ${#content} -eq 0 ];
         then
@@ -469,7 +469,7 @@ function create_body()
         printf "$content_ssh" | sed  -e 's/\\/\\\\/g' -e 's/\x27/\\\x27/g' -e 's/"/\\"/g'\
     )
 
-    # printf "[ENTERING DB]:\n$content_ssh";read
+    printf "[ENTERING DB]:\n$content_ssh";read
 
     clean_tmp
 }
