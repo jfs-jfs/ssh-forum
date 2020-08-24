@@ -1,5 +1,8 @@
 #!/bin/bash
 
+## Set locale for special chars
+export LC_ALL=en_US.UTF-8 ## bash
+
 # Debug
 if [ $(hostname) = "localhost" ]; then debug=1; else debug=0;fi
 
