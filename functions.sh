@@ -679,7 +679,11 @@ function pick_theme()
         )
 
     if [ -z "$theme" ]; then theme="default"; fi
-    export DIALOGRC="$(pwd)/themes/$theme.dialogrc"
+    if [ $debug -eq 0 ]; then
+        export DIALOGRC="$(pwd)/themes/$theme.dialogrc"
+    else
+        export DIALOGRC="/home/lowlife/shell/themes/$theme.dialogrc"
+    fi
 }
 
 function get_option()
