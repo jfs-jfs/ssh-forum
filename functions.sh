@@ -436,7 +436,7 @@ function create_body()
                 --title "...Error..."\
                 --no-cancel\
                 --sleep 3\
-                --infobox "You can not leave this field empy."\
+                --infobox "You can not leave this field empty."\
                 10 60
                 free=0
                 continue
@@ -710,6 +710,23 @@ function pick_editor()
     # editor="BASIC"
 }
 
+function pick_theme()
+{
+    theme=$(dialog --backtitle "$banner"\
+        --title "...Colors..."\
+        --no-cancel\
+        --menu "What style do you prefer?"\
+        10 50 3\
+        "default"    "The classic Analog City look"\
+        "nighttime"  "Dark mode, Analog City at night"\
+        "monochrome" "Like a Macintosh I"\
+        3>&1 1>&2 2>&3 3>&-\
+        )
+
+    if [ -z "$theme" ]; then theme="default"; fi
+    export DIALOGRC="$(pwd)/themes/$theme.dialogrc"
+}
+
 function get_option()
 {
     option=$(\
@@ -720,6 +737,7 @@ function get_option()
             12 80 4\
             "<Look around>"     "Surf the system."\
             "<Pick editor>"     "Pick the editor to use."\
+            "<Pick theme>"      "Pick the theme to use."\
             "<Exit>"            "Exit the system."\
             3>&1 1>&2 2>&3 3>&-\
     )
