@@ -436,7 +436,7 @@ function create_body()
                 --title "...Error..."\
                 --no-cancel\
                 --sleep 3\
-                --infobox "You can not leave this field empy."\
+                --infobox "You can not leave this field empty."\
                 10 60
                 free=0
                 continue
