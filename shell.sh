@@ -58,6 +58,11 @@ function main()
             # read
             ;;
 
+            "<Pick nickname>")
+            pick_editor
+            # read
+            ;;
+
             "<Pick theme>")
             pick_theme
             # read

@@ -296,80 +296,9 @@ function watch_thread()
 
 function create_post()
 {
-    local free=0
-    local thread_n=$thread_id
-    local author=""
-
-    while [ $free -eq 0 ];
-    do
-        free=1
-        ### Ask for thread number and other stuf
-        if [ $thread_n -eq -1 ]; then
-            
-            dialog --backtitle "$banner"\
-                    --title "...New Post Form..."\
-                    --form "Please fill all the fields in the form. Switch between fields with the Arrow keys. To jump to the <OK> use the <Tab> key, also pressing <Enter> confirms the form."\
-                    20 60 7\
-                    "[Thread id]:"  1 13 ""                 1 27 4 3\
-                    "[Author]:"     3 13 "$new_author"      3 27 20 20\
-                    2>/tmp/$usr_id || return
-
-            thread_n=$(head -n1 /tmp/$usr_id | tr -cd "[0-9]")
-            thread_id=$thread_n
-
-            # Clean author name
-            new_author=$(tail -n1 /tmp/$usr_id | sed -e 's/[\"\\\;\<\>'"'"']/ /g')
-            rm /tmp/$usr_id
-        else
-
-            dialog\
-                --max-input 20\
-                --backtitle "$banner"\
-                --title "...New Reply..."\
-                --ok-label "CONFIRM"\
-                --cancel-label "BACK"\
-                --inputbox "Press <Tab> to get to the buttons.\n[AUTHOR]:"\
-                10 30 "$new_author" 2>/tmp/"$usr_id" || return
-
-            author=$(cat /tmp/$usr_id | sed -e 's/[\"\\\;\<\>'"'"']/ /g')
-            # echo "$author";read
-
-            # new_author=$(dialog --max-input 20 --inputbox "[AUTHOR]:" 8 30 "$new_author" 3>&1 1>&2 2>&3 3>&-)
-            # Clean author name
-            # new_author=$(echo -e "$new_author" | sed -e 's/[\"\\\;\<\>'"'"']/ /g')
-
-        fi
-
-
-        if [ -z $author ]; then
-        
-            dialog --backtitle "$banner" \
-                --title "...Error..."\
-                --sleep 3\
-                --infobox "Please fill the author field."\
-                10 60
-            free=0
-            new_author="Pagan"
-            continue
-        fi
-
-        new_author=${author:0:20}
-
-        ## Ask if it looks okay or not
-        dialog --backtitle "$banner" \
-            --title "...OK?..."\
-            --yesno "Does the following look good to you?
-
-            Thread id: $thread_n
-            Author: $new_author"\
-            8 50 \
-            || free=0
-    done
-
     ### Create the body of the post
     touch /tmp/$usr_id
     create_body
-    rm /tmp/$usr_id
     clean_tmp
     add_reply
 
@@ -386,6 +315,7 @@ function create_body()
     local ret;
 
     # echo "$editor";read
+    
     echo -e "$vim_file" > /tmp/$usr_id
 
     while [ $free -eq 0 ];
@@ -395,7 +325,15 @@ function create_body()
         case "$editor" in
 
             "VIM")
-                vim "/tmp/$usr_id"
+
+                # echo "TESTING NEW VIM DONT MIND ME"; read
+                if [ $debug -eq 0 ]; then
+                    .././vim -Z -n "/tmp/$usr_id"
+                else
+                    /home/lowlife/shell/./vim -Z -n "/tmp/$usr_id"
+                fi
+                # read;
+                # rvim "/tmp/$usr_id"
                 if [ ! -s "/tmp/$usr_id" ]; then abort_post=1; return ;fi
             ;;
 
@@ -424,11 +362,12 @@ function create_body()
 
         esac
 
-        content=$(cat -s /tmp/$usr_id)
+        content=$(cat -s /tmp/$usr_id | sed -e 's/\%/ /g')
         content=${content:0:1024}
 
         ## Clean input  from double quotation marks, \, ;, < and double empty lines
-        content=$(printf "$content" | sed -e 's/[\\\;\<]/ /g')
+        content=$(printf "$content" | sed -e 's/[\\\;\<]/ /g' -e '/^# /d')
+        # echo "$content ${#content}";read
 
         if [ ${#content} -eq 0 ];
         then
@@ -577,8 +516,8 @@ function new_thread()
             "[Author]:" 4 15 "$new_author"     4 27 20 20\
             2>/tmp/$usr_id || return
 
-        new_title=$(head -n1 /tmp/$usr_id | sed -e 's/[\"\\\;\<\>]/ /g' -e 's/'"'"'/'"\\'"'/g')
-        new_author=$(tail -n1 /tmp/$usr_id | sed -e 's/[\"\\\;\<\>'"'"']/ /g')
+        new_title=$(head -n1 /tmp/$usr_id | sed -e 's/[\"\\\;\<\>\%]/ /g' -e 's/'"'"'/'"\\'"'/g')
+        new_author=$(tail -n1 /tmp/$usr_id | sed -e 's/[\"\\\;\<\>'"'"'\%]/ /g')
         rm /tmp/$usr_id
 
         ## Check for empty field
@@ -619,7 +558,6 @@ function new_thread()
     ### Create the body of the post
     touch /tmp/$usr_id
     create_body
-    rm /tmp/$usr_id
     add_thread
 
     clean_tmp
@@ -704,10 +642,27 @@ function pick_editor()
         "VIM"   "The good choice"\
         3>&1 1>&2 2>&3 3>&-\
         )
-    
+
     if [ -z "$editor" ]; then editor="BASIC"; fi
     # echo "$editor";read
     # editor="BASIC"
+}
+
+function pick_name()
+{
+    dialog\
+        --max-input 20\
+        --backtitle "$banner"\
+        --title "...New Reply..."\
+        --ok-label "CONFIRM"\
+        --cancel-label "BACK"\
+        --inputbox "Press <Tab> to get to the buttons.\n[AUTHOR]:"\
+        10 30 "$new_author" 2>/tmp/"$usr_id" || return
+
+    local author=$(cat /tmp/$usr_id | sed -e 's/[\"\\\;\<\>'"'"'\%]/ /g')
+
+    if [ -z $author ]; then author="Pagan"; fi
+    new_author=${author:0:20}
 }
 
 function pick_theme()
@@ -734,9 +689,10 @@ function get_option()
             --title "...Decisions..."\
             --cancel-label "EXIT"\
             --menu "Please choose one option:"\
-            12 80 4\
+            13 80 5\
             "<Look around>"     "Surf the system."\
             "<Pick editor>"     "Pick the editor to use."\
+            "<Pick nickname>"   "Default Pagan"\
             "<Pick theme>"      "Pick the theme to use."\
             "<Exit>"            "Exit the system."\
             3>&1 1>&2 2>&3 3>&-\
