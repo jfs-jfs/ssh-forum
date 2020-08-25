@@ -59,7 +59,7 @@ function main()
             ;;
 
             "<Pick nickname>")
-            pick_editor
+            pick_name
             # read
             ;;
 
