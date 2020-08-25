@@ -58,6 +58,11 @@ function main()
             # read
             ;;
 
+            "<Pick theme>")
+            pick_theme
+            # read
+            ;;
+
             ## TODO
             "<Admin Tools>")
             dialog --backtitle "$banner" \
