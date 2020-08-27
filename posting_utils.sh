@@ -7,6 +7,7 @@ content_web=""
 content_ssh=""
 post_size=0
 abort_post=0
+bump_limit=0
 
 # Vim help
 vim_file="# To exit vim press [ESC] : q [ENTER]\n# To save the file and exit [ESC] : wq [ENTER]\n# If you want to cancel the post leave this file empty(size 0)"

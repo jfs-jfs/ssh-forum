@@ -37,6 +37,7 @@ editor="BASIC"
 usr_id="$(date +%s)analog"
 ip=$(echo $SSH_CLIENT | awk '{ print $1 }')
 banner="[!]Analog City:: Interface $version[!]"
+bump_limit=60
 
 # Default preferences
 post_size=1024

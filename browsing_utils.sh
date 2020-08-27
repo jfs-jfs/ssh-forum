@@ -8,6 +8,7 @@ queried_boards=1    # Do not oversaturate the database
 boards=()           # Boards to pick from
 max_iterations=500  # Break if something goes wrong
 
+
 # If query fails
 error_msg="Something went wrong. If persists report it to github.com/analogcity\nPres enter to continue...";
 
@@ -19,7 +20,7 @@ thread_list_query="SELECT id, title, creation, author, replays, pinned FROM thre
 
 # Thread related
 thread_query="SELECT id, author, comment, creation FROM post_ssh WHERE thread_id=%d ORDER BY creation"
-thread_op_query="SELECT id, title, author, comment, creation FROM thread_ssh WHERE id=%d"
+thread_op_query="SELECT id, title, author, comment, replays, pinned, creation FROM thread_ssh WHERE id=%d"
 
 ### Functions
 
@@ -138,16 +139,16 @@ function select_thread()
             local t_title="$(echo -e "$line" | cut -d$'\t' -f2 )$(printf ' %.0s' {0..40})";t_title=${t_title:0:40}
             local t_creation=$(echo -e "$line" | cut -d$'\t' -f3)
             local t_author="$(echo -e "$line" | cut -d$'\t' -f4)$(printf ' %.0s' {0..10})";t_author=${t_author:0:10}
-            local t_replys=$(echo -e "$line" | cut -d$'\t' -f5)
+            local t_replies=$(echo -e "$line" | cut -d$'\t' -f5)
             local t_pinned=$(echo -e "$line" | cut -d$'\t' -f6)
 
 
             # echo -e "$line";read;
-            # echo -e "id:$id title:$t_title creation:$t_creation author:$t_author replys:$t_replys p:$t_pinned";sleep 0.2
+            # echo -e "id:$id title:$t_title creation:$t_creation author:$t_author replys:$t_replies p:$t_pinned";sleep 0.2
             if [ $t_pinned -eq 1 ]; then
-                options+=("$id" "$t_author:: \Z4${t_title^^}\Zn$t_creation -- $t_replys")
+                options+=("$id" "$t_author:: \Z4${t_title^^}\Zn$t_creation -- $t_replies")
             else
-                options+=("$id" "$t_author:: \Z5${t_title^^}\Zn$t_creation -- $t_replys")
+                options+=("$id" "$t_author:: \Z5${t_title^^}\Zn$t_creation -- $t_replies")
             fi
 
         done <<< "$(echo -e "$threads")"
@@ -210,6 +211,7 @@ function watch_thread()
     local cancel_l="REPLY"
     local extra_l="REFRESH"
 
+    local locked_thread=0
     local body=""
     local posts=""
     local op=""
@@ -225,13 +227,26 @@ function watch_thread()
     reset_db
     # echo -e "$op"; read
 
+    ## Thread metainfo
+    local t_replies=$(echo -e "$op" | cut -d$'\t' -f5)
+    local t_pinned=$(echo -e "$op" | cut  -d$'\t' -f6)
+
+    # Should the thread be locked to replys?
+    if [ $t_replies -ge $bump_limit -a $t_pinned -ne 1 ]; then
+        locked_thread=1
+        extra_l="BACK"
+        cancel_l="MAXED REPLIES"
+    fi
+
     ## OP formatting
     local op_id="$thread_id"
     local op_title=$(echo -e "$op" | cut -d$'\t' -f2)
     local op_author=$(echo -e "$op" | cut -d$'\t' -f3)
     local op_msg=$(echo -e "$op" | cut -d$'\t' -f4 | sed -e "s/<br>/\\\\n/g")
-    local op_creation=$(echo -e "$op" | cut -d$'\t' -f5)
-    # echo -e "$op_id -- $op_title -- $op_author -- $op_creation\n$op_msg"; read
+    local op_creation=$(echo -e "$op" | cut -d$'\t' -f7)
+
+    # echo -e "$op_id -- $op_title -- $op_author -- $op_creation -- $t_replies -- $t_pinned\n$op_msg"; read
+    # echo $(echo -e "$line" | cut -d$'\t' -f6);read
 
     title="\Zr\Zb[${op_title^^}] :: [$op_author] :: [$op_creation] :: [ID:$op_id] (Scroll: j-k)\Zn"
     body="\n$op_msg\n\n"
@@ -278,6 +293,8 @@ function watch_thread()
 
     local ret=$?
     # echo $ret; read
+
+    if [ $locked_thread -eq 1 ]; then ret=0; fi
 
     case $ret in
         0)
