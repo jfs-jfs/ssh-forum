@@ -8,10 +8,6 @@ queried_boards=1    # Do not oversaturate the database
 boards=()           # Boards to pick from
 max_iterations=500  # Break if something goes wrong
 
-# Vim help
-vim_file="# To exit vim press [ESC] : q [ENTER]\n# To save the file and exit [ESC] : wq [ENTER]\n# If you want to cancel the post leave this file empty(size 0)"
-
-
 # If query fails
 error_msg="Something went wrong. If persists report it to github.com/analogcity\nPres enter to continue...";
 
