@@ -16,11 +16,11 @@ error_msg="Something went wrong. If persists report it to github.com/analogcity\
 
 # Board related
 board_query="SELECT id, name, description FROM board"
-thread_list_query="SELECT id, title, creation, author, replays, pinned FROM thread_ssh WHERE table_id=%d ORDER BY pinned DESC, last_rp DESC LIMIT 25"
+thread_list_query="SELECT id, title, creation, author, replies, pinned FROM thread_ssh WHERE table_id=%d ORDER BY pinned DESC, last_rp DESC LIMIT 25"
 
 # Thread related
 thread_query="SELECT id, author, comment, creation FROM post_ssh WHERE thread_id=%d ORDER BY creation"
-thread_op_query="SELECT id, title, author, comment, replays, pinned, creation FROM thread_ssh WHERE id=%d"
+thread_op_query="SELECT id, title, author, comment, replies, pinned, creation FROM thread_ssh WHERE id=%d"
 
 ### Functions
 

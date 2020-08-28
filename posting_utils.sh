@@ -16,16 +16,11 @@ vim_file="# To exit vim press [ESC] : q [ENTER]\n# To save the file and exit [ES
 ### Queries
 
 # Adding posts
-add_post_query_web="INSERT INTO post (author,thread_id,comment,image_link, poster_ip) VALUES ( '%s', %d, '%s', 'img', '%s');update thread set replays=replays+1 where id=%d"
-add_post_query_ssh="INSERT INTO post_ssh (author,thread_id,comment,image_link, poster_ip) VALUES ( '%s', %d, '%s', 'img', '%s');update thread_ssh set replays=replays+1 where id=%d"
+add_post_query_web="INSERT INTO post (author,thread_id,comment, poster_ip) VALUES ( '%s', %d, '%s', '%s');update thread set replies=replies+1 where id=%d"
+add_post_query_ssh="INSERT INTO post_ssh (author,thread_id,comment, poster_ip) VALUES ( '%s', %d, '%s', '%s');update thread_ssh set replies=replies+1 where id=%d"
 # Adding thread
-add_thread_query_web="INSERT INTO thread (author,table_id,comment,image_link,title, poster_ip) VALUES ('%s', %d, '%s', 'img', '%s', '%s')"
-add_thread_query_ssh="INSERT INTO thread_ssh (author,table_id,comment,image_link,title, poster_ip) VALUES ('%s', %d, '%s', 'img', '%s', '%s')"
-
-## Updates
-# Update n_replys
-update_replys_web="UPDATE thread set replays=replays+1 where id=%d"
-update_replys_ssh="UPDATE thread set replays = replays + 1 where id=%d"
+add_thread_query_web="INSERT INTO thread (author,table_id,comment,title, poster_ip) VALUES ('%s', %d, '%s', '%s', '%s')"
+add_thread_query_ssh="INSERT INTO thread_ssh (author,table_id,comment,title, poster_ip) VALUES ('%s', %d, '%s', '%s', '%s')"
 
 ### Functions
 function reset_posting()
