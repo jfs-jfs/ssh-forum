@@ -91,22 +91,6 @@ function main()
             # read
             ;;
 
-            ## TODO
-            "<Admin Tools>")
-            dialog --backtitle "$banner" \
-                --title "...Identification..."\
-                --no-cancel\
-                --inputbox\
-                "Please enter your credentials:"\
-                10 50
-            
-            dialog --backtitle "$banner" \
-                --title "...Wrong credentials..."\
-                --sleep 5\
-                --infobox\
-                "Try again"\
-                5 50
-            ;;
             *)
             clear
             exit

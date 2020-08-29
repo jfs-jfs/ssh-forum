@@ -47,10 +47,11 @@ function pick_theme()
         --title "...Colors..."\
         --no-cancel\
         --menu "What style do you prefer?"\
-        10 50 3\
-        "default"    "The classic Analog City look"\
-        "nighttime"  "Dark mode, Analog City at night"\
-        "monochrome" "Like a Macintosh I"\
+        11 50 4\
+        "default"           "The classic Analog City look"\
+        "nighttime"         "Dark mode, Analog City at night"\
+        "monochrome"        "Like a Macintosh I"\
+        "dark_slackware"    "Slackware theme pagan suggested"\
         3>&1 1>&2 2>&3 3>&-\
         )
 
