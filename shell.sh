@@ -35,9 +35,11 @@ fi
 version="v1.2"
 editor="BASIC"
 usr_id="$(date +%s)analog"
+day=$(date '+%d-%m-%y')
 ip=$(echo $SSH_CLIENT | awk '{ print $1 }')
 banner="[!]Analog City:: Interface $version[!]"
 bump_limit=60
+max_threads_per_day=10
 
 # Default preferences
 post_size=1024

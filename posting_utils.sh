@@ -8,6 +8,7 @@ content_ssh=""
 post_size=0
 abort_post=0
 bump_limit=0
+max_threads_per_day=10
 
 # Vim help
 vim_file="# To exit vim press [ESC] : q [ENTER]\n# To save the file and exit [ESC] : wq [ENTER]\n# If you want to cancel the post leave this file empty(size 0)"
@@ -53,6 +54,23 @@ function new_thread()
     if [ $board_id -eq -1 ]; then
         echo "Needs a board to make a thread"; read
         return
+    fi
+
+    # Check we can post
+    if [ -f "/tmp/$day" ]; then
+
+        local threads_today=$(wc -m "/tmp/$day" | cut -d' ' -f1)
+
+        if [ $threads_today -ge $max_threads_per_day ]; then
+                dialog --backtitle "$banner" \
+                    --title "[!]Max threads[!]"\
+                    --msgbox "\nSorry but the max number of threads per day($max_threads_per_day) has been exceded. If it seems to low please post in suggestions. Sorry!"\
+                    10 60
+            return
+        fi
+
+    else
+        touch "/tmp/$day"
     fi
 
     local free=0
@@ -113,6 +131,9 @@ function new_thread()
     touch /tmp/$usr_id
     create_body
     add_thread
+
+    ### Count created thread
+    echo 'x' >> "/tmp/$day"
 
     # Reset for next post
     reset_posting
