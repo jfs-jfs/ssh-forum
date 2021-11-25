@@ -19,8 +19,8 @@ board_query="SELECT id, name, description FROM board"
 thread_list_query="SELECT id, title, creation, author, num_replies, is_pinned FROM thread WHERE board_id=%d ORDER BY is_pinned DESC, last_reply DESC LIMIT 25"
 
 # Thread related
-thread_query="SELECT id, author, body, creation FROM post WHERE thread_id=%d ORDER BY creation"
-thread_op_query="SELECT id, title, author, body, num_replies, is_pinned, creation FROM thread WHERE id=%d"
+thread_query="SELECT processed_text FROM post WHERE thread_id=%d ORDER BY creation"
+thread_op_query="SELECT num_replies, processed_op, body FROM thread WHERE id=%d"
 
 ### Functions
 
@@ -75,9 +75,9 @@ function select_board()
         # Prase database output
         while read -r line
         do
-            local id=$(echo -e "$line" | cut -d$'|' -f1)
-            local name="<$(echo -e "$line" | cut -d$'|' -f2)>$(printf " %.0s" {0..14})";name=${name:0:14}
-            local desc=$(echo -e "$line" | cut -d$'|' -f3)
+            local id=$(echo -e "$line" | cut -d'|' -f1)
+            local name="<$(echo -e "$line" | cut -d'|' -f2)>$(printf " %.0s" {0..14})";name=${name:0:14}
+            local desc=$(echo -e "$line" | cut -d'|' -f3)
 
             options+=("$id" "$name:: $desc")
 
@@ -134,12 +134,12 @@ function select_thread()
         do
             # title has to fill 40 chars
             # author has to fill 10 chars
-            local id=$(echo -e "$line" | cut -d$'|' -f1)
-            local t_title="$(echo -e "$line" | cut -d$'|' -f2 )$(printf ' %.0s' {0..40})";t_title=${t_title:0:40}
-            local t_creation=$(echo -e "$line" | cut -d$'|' -f3)
-            local t_author="$(echo -e "$line" | cut -d$'|' -f4)$(printf ' %.0s' {0..10})";t_author=${t_author:0:10}
-            local t_replies=$(echo -e "$line" | cut -d$'|' -f5)
-            local t_pinned=$(echo -e "$line" | cut -d$'|' -f6)
+            local id=$(echo -e "$line" | cut -d'|' -f1)
+            local t_title="$(echo -e "$line" | cut -d'|' -f2 )$(printf ' %.0s' {0..40})";t_title=${t_title:0:40}
+            local t_creation=$(echo -e "$line" | cut -d'|' -f3)
+            local t_author="$(echo -e "$line" | cut -d'|' -f4)$(printf ' %.0s' {0..10})";t_author=${t_author:0:10}
+            local t_replies=$(echo -e "$line" | cut -d'|' -f5)
+            local t_pinned=$(echo -e "$line" | cut -d'|' -f6)
 
 
             # echo -e "$line";read;
@@ -196,7 +196,6 @@ function select_thread()
 
 }
 
-
 function watch_thread()
 {
     if [ $thread_id -eq -1 ];then return;fi     # Need it for repleis
@@ -217,18 +216,16 @@ function watch_thread()
     local query=$(printf "$thread_op_query" "$thread_id")
     # echo "$query";read
 
-
     ## Get OP
     # Look it up in the database
     select_query "$query"
 
     op="$query_result"
     reset_db
-    # echo -e "$op"; read
+    echo -e "$op"; read
 
     ## Thread metainfo
-    local t_replies=$(echo -e "$op" | cut -d$'|' -f5)
-    local t_pinned=$(echo -e "$op" | cut  -d$'|' -f6)
+    local t_replies=$(echo -e "$op" | cut -d'|' -f1)
 
     # Should the thread be locked to replys?
     if [ $t_replies -ge $bump_limit -a $t_pinned -ne 1 ]; then
@@ -236,19 +233,9 @@ function watch_thread()
         extra_l="BACK"
         cancel_l="MAXED REPLIES"
     fi
-
-    ## OP formatting
-    local op_id="$thread_id"
-    local op_title=$(echo -e "$op" | cut -d$'|' -f2)
-    local op_author=$(echo -e "$op" | cut -d$'|' -f3)
-    local op_msg=$(echo -e "$op" | cut -d$'|' -f4 | sed -e "s/<br>/\\\\n/g")
-    local op_creation=$(echo -e "$op" | cut -d$'|' -f7)
-
-    # echo -e "$op_id -- $op_title -- $op_author -- $op_creation -- $t_replies -- $t_pinned\n$op_msg"; read
-    # echo $(echo -e "$line" | cut -d$'|' -f6);read
-
-    title="\Zr\Zb[${op_title^^}] :: [$op_author] :: [$op_creation] :: [ID:$op_id] (Scroll: j-k)\Zn"
-    body="\n$op_msg\n\n"
+    
+    title=$(echo -e "$op" | cut -d'|' -f2)
+    body="\n$(echo -e "$op" | cut -d'|' -f3)\n\n"
 
 
     ## Get posts
@@ -256,29 +243,8 @@ function watch_thread()
 
     # Look it up in the database
     select_query "$query"
-
-    posts="$query_result"
+    body="$body$(echo -e "$query_result")"
     reset_db
-    # echo -e "posts:\n$posts"; read
-
-    # Format posts & append to body
-    while read -r line
-    do
-        local id=$(echo -e "$line" | cut -d$'|' -f1)$(printf ' %.0s' {0..5});id=${id:0:5}
-        local p_author=$(echo -e "$line" | cut -d$'|' -f2)$(printf ' %.0s' {0..10});p_author=${p_author:0:10}
-        local p_msg=$(echo -e "$line" | cut -d$'|' -f3 | sed -e "s/<br>/\\\\n/g");
-        local p_creation=$(echo -e "$line" | cut -d$'|' -f4)
-        local post_header=""
-
-        # echo -e "[EXITING DB]:\n$id $p_creation $p_author\n$p_msg";sleep 0.2
-        
-        post_header=" \n     \Z4\Zr\Zb[ID]:$id[AUTHOR]:$p_author[CREATION]:$p_creation\Zn\n"
-
-        body="$body$post_header\n$p_msg\n\n"
-
-    done <<< "$(echo -e "$posts")"
-
-    # read
 
     ## Display dialog
     dialog\
