@@ -222,7 +222,7 @@ function watch_thread()
 
     op="$query_result"
     reset_db
-    echo -e "$op"; read
+    # echo -e "$op"; read
 
     ## Thread metainfo
     local t_replies=$(echo -e "$op" | cut -d'|' -f1)

@@ -1,3 +1,5 @@
 vars.sh
-/newthings/
+newthings/
 data.db
+bin/
+bin/*

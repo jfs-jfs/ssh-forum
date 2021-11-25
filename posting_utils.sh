@@ -229,19 +229,9 @@ function create_body()
     done
 
     ## Prase the input
-    if [ $debug -eq 0 ];
-    then
-        # SSH
-        content=$($bin_path./ssh_postref "$content")
-        content=$($bin_path./ssh_greentext "$content")
-        content=$($bin_path./endline "$content")
-
-    else
-        # SSH
-        content=$($bin_path./ssh_postref "$content")
-        content=$($bin_path./ssh_greentext "$content")
-        content=$($bin_path./endline "$content")
-    fi
+    content=$($bin_path./postref "$content")
+    content=$($bin_path./greentext "$content")
+    content=$($bin_path./endline "$content")
 
     # Clean the double quotes and single quotes
     content=$(\

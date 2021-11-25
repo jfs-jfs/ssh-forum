@@ -16,7 +16,7 @@ export LC_ALL=en_US.UTF-8 ## bash
 ## Functions and files
 if [ $debug -eq 0 ];
 then
-    bin_path="../bin/"
+    bin_path="bin/"
     source vars.sh
     source database_utils.sh
     source browsing_utils.sh
