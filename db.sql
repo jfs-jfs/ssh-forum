@@ -1,89 +1,40 @@
+DROP TABLE IF EXISTS board;
+CREATE TABLE board (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name CHAR(100) NOT NULL,
+    description CHAR(256) NOT NULL
+);
 
-DROP TABLE IF EXISTS `board`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `board` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `link` varchar(10) NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `description` varchar(200) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `link` (`link`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS thread;
+CREATE TABLE thread (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    board_id INTEGER,
+    is_pinned BOOLEAN NOT NULL CHECK (is_pinned IN (0,1)) DEFAULT 0,
+    author CHAR(256) NOT NULL DEFAULT 'Pagan',
+    author_ip CHAR(15) NOT NULL DEFAULT '0.0.0.0',
+    title CHAR(256) NOT NULL,
+    body TEXT NOT NULL,
+    creation DATETIME DEFAULT CURRENT_TIMESTAMP,
+    last_reply DATETIME DEFAULT CURRENT_TIMESTAMP,
+    num_replies INTEGER NOT NULL DEFAULT 0,
+    FOREIGN KEY(board_id) REFERENCES board(id)
+);
 
+DROP TABLE IF EXISTS post;
+CREATE TABLE post(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    thread_id INTEGER,
+    author CHAR(256) NOT NULL DEFAULT 'Pagan',
+    author_ip CHAR(15) NOT NULL DEFAULT '0.0.0.0',
+    creation DATETIME DEFAULT CURRENT_TIMESTAMP,
+    body TEXT NOT NULL,
+    FOREIGN KEY(thread_id) REFERENCES thread(id)
+);
 
-DROP TABLE IF EXISTS `post`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `post` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `author` varchar(100) NOT NULL DEFAULT 'Pagan',
-  `comment` text NOT NULL,
-  `thread_id` int NOT NULL,
-  `creation` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `poster_ip` varchar(15) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `thread_id` (`thread_id`),
-  CONSTRAINT `post_ibfk_1` FOREIGN KEY (`thread_id`) REFERENCES `thread` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1280 DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
-
-DROP TABLE IF EXISTS `post_ssh`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `post_ssh` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `author` varchar(100) NOT NULL DEFAULT 'Pagan',
-  `comment` text NOT NULL,
-  `thread_id` int NOT NULL,
-  `creation` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `poster_ip` varchar(15) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `thread_id` (`thread_id`),
-  CONSTRAINT `postssh_ibfk_1` FOREIGN KEY (`thread_id`) REFERENCES `thread_ssh` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1280 DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
-
-DROP TABLE IF EXISTS `thread`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `thread` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `table_id` int NOT NULL,
-  `title` varchar(256) DEFAULT NULL,
-  `author` varchar(256) NOT NULL DEFAULT 'Pagan',
-  `comment` text NOT NULL,
-  `creation` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `last_rp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `poster_ip` varchar(15) DEFAULT NULL,
-  `pinned` tinyint(1) NOT NULL DEFAULT '0',
-  `replies` int NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
-  KEY `table_id` (`table_id`),
-  CONSTRAINT `thread_ibfk_1` FOREIGN KEY (`table_id`) REFERENCES `board` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=188 DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
-
-DROP TABLE IF EXISTS `thread_ssh`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `thread_ssh` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `table_id` int NOT NULL,
-  `title` varchar(256) DEFAULT NULL,
-  `author` varchar(256) NOT NULL DEFAULT 'Pagan',
-  `comment` text NOT NULL,
-  `creation` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `last_rp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `poster_ip` varchar(15) DEFAULT NULL,
-  `pinned` tinyint(1) NOT NULL DEFAULT '0',
-  `replies` int NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
-  KEY `table_id` (`table_id`),
-  CONSTRAINT `threadssh_ibfk_1` FOREIGN KEY (`table_id`) REFERENCES `board` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=186 DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
+CREATE TRIGGER update_replies
+AFTER INSERT ON post
+BEGIN
+    UPDATE thread
+    SET last_reply=CURRENT_TIMESTAMP , num_replies = num_replies + 1
+    WHERE id=new.thread_id;
+END;

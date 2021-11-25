@@ -16,11 +16,11 @@ error_msg="Something went wrong. If persists report it to github.com/analogcity\
 
 # Board related
 board_query="SELECT id, name, description FROM board"
-thread_list_query="SELECT id, title, creation, author, replies, pinned FROM thread_ssh WHERE table_id=%d ORDER BY pinned DESC, last_rp DESC LIMIT 25"
+thread_list_query="SELECT id, title, creation, author, num_replies, is_pinned FROM thread WHERE board_id=%d ORDER BY is_pinned DESC, last_reply DESC LIMIT 25"
 
 # Thread related
-thread_query="SELECT id, author, comment, creation FROM post_ssh WHERE thread_id=%d ORDER BY creation"
-thread_op_query="SELECT id, title, author, comment, replies, pinned, creation FROM thread_ssh WHERE id=%d"
+thread_query="SELECT id, author, body, creation FROM post WHERE thread_id=%d ORDER BY creation"
+thread_op_query="SELECT id, title, author, body, num_replies, is_pinned, creation FROM thread WHERE id=%d"
 
 ### Functions
 
@@ -29,7 +29,7 @@ function look_around()
 
     # echo "$level";read
 
-    while [ $level -ge 0  -a $max_iterations -ge 0 ];
+    while [ $level -ge 0 -a $max_iterations -ge 0 ];
     do
         # LVL 0
         select_board
@@ -69,16 +69,15 @@ function select_board()
     if [ $queried_boards -eq 1 ]; then
         # Look it up the database
         select_query "$board_query"
-        local res="$(echo -e "$query_result" | tail -n+2 )"
-        # echo -e "$query_result"; read
+        local res="$query_result"
         reset_db
 
         # Prase database output
         while read -r line
         do
-            local id=$(echo -e "$line" | cut -d$'\t' -f1)
-            local name="<$(echo -e "$line" | cut -d$'\t' -f2)>$(printf " %.0s" {0..14})";name=${name:0:14}
-            local desc=$(echo -e "$line" | cut -d$'\t' -f3)
+            local id=$(echo -e "$line" | cut -d$'|' -f1)
+            local name="<$(echo -e "$line" | cut -d$'|' -f2)>$(printf " %.0s" {0..14})";name=${name:0:14}
+            local desc=$(echo -e "$line" | cut -d$'|' -f3)
 
             options+=("$id" "$name:: $desc")
 
@@ -88,7 +87,6 @@ function select_board()
         boards=( "${options[@]}" )
         queried_boards=0
     fi
-
 
     # echo -e "${boards[@]}";read
 
@@ -125,7 +123,8 @@ function select_thread()
     select_query "$query"
 
     # Thread_list
-    threads=$(echo -e "$query_result" | tail +2)
+    threads="$query_result"
+    # echo "$threads"; read
 
     # Are there threads to display?
     if [ -n "$threads" ];then
@@ -135,12 +134,12 @@ function select_thread()
         do
             # title has to fill 40 chars
             # author has to fill 10 chars
-            local id=$(echo -e "$line" | cut -d$'\t' -f1)
-            local t_title="$(echo -e "$line" | cut -d$'\t' -f2 )$(printf ' %.0s' {0..40})";t_title=${t_title:0:40}
-            local t_creation=$(echo -e "$line" | cut -d$'\t' -f3)
-            local t_author="$(echo -e "$line" | cut -d$'\t' -f4)$(printf ' %.0s' {0..10})";t_author=${t_author:0:10}
-            local t_replies=$(echo -e "$line" | cut -d$'\t' -f5)
-            local t_pinned=$(echo -e "$line" | cut -d$'\t' -f6)
+            local id=$(echo -e "$line" | cut -d$'|' -f1)
+            local t_title="$(echo -e "$line" | cut -d$'|' -f2 )$(printf ' %.0s' {0..40})";t_title=${t_title:0:40}
+            local t_creation=$(echo -e "$line" | cut -d$'|' -f3)
+            local t_author="$(echo -e "$line" | cut -d$'|' -f4)$(printf ' %.0s' {0..10})";t_author=${t_author:0:10}
+            local t_replies=$(echo -e "$line" | cut -d$'|' -f5)
+            local t_pinned=$(echo -e "$line" | cut -d$'|' -f6)
 
 
             # echo -e "$line";read;
@@ -223,13 +222,13 @@ function watch_thread()
     # Look it up in the database
     select_query "$query"
 
-    op=$(echo -e "$query_result" | tail +2)
+    op="$query_result"
     reset_db
     # echo -e "$op"; read
 
     ## Thread metainfo
-    local t_replies=$(echo -e "$op" | cut -d$'\t' -f5)
-    local t_pinned=$(echo -e "$op" | cut  -d$'\t' -f6)
+    local t_replies=$(echo -e "$op" | cut -d$'|' -f5)
+    local t_pinned=$(echo -e "$op" | cut  -d$'|' -f6)
 
     # Should the thread be locked to replys?
     if [ $t_replies -ge $bump_limit -a $t_pinned -ne 1 ]; then
@@ -240,13 +239,13 @@ function watch_thread()
 
     ## OP formatting
     local op_id="$thread_id"
-    local op_title=$(echo -e "$op" | cut -d$'\t' -f2)
-    local op_author=$(echo -e "$op" | cut -d$'\t' -f3)
-    local op_msg=$(echo -e "$op" | cut -d$'\t' -f4 | sed -e "s/<br>/\\\\n/g")
-    local op_creation=$(echo -e "$op" | cut -d$'\t' -f7)
+    local op_title=$(echo -e "$op" | cut -d$'|' -f2)
+    local op_author=$(echo -e "$op" | cut -d$'|' -f3)
+    local op_msg=$(echo -e "$op" | cut -d$'|' -f4 | sed -e "s/<br>/\\\\n/g")
+    local op_creation=$(echo -e "$op" | cut -d$'|' -f7)
 
     # echo -e "$op_id -- $op_title -- $op_author -- $op_creation -- $t_replies -- $t_pinned\n$op_msg"; read
-    # echo $(echo -e "$line" | cut -d$'\t' -f6);read
+    # echo $(echo -e "$line" | cut -d$'|' -f6);read
 
     title="\Zr\Zb[${op_title^^}] :: [$op_author] :: [$op_creation] :: [ID:$op_id] (Scroll: j-k)\Zn"
     body="\n$op_msg\n\n"
@@ -258,17 +257,17 @@ function watch_thread()
     # Look it up in the database
     select_query "$query"
 
-    posts=$(echo -e "$query_result" | tail +2)
+    posts="$query_result"
     reset_db
     # echo -e "posts:\n$posts"; read
 
     # Format posts & append to body
     while read -r line
     do
-        local id=$(echo -e "$line" | cut -d$'\t' -f1)$(printf ' %.0s' {0..5});id=${id:0:5}
-        local p_author=$(echo -e "$line" | cut -d$'\t' -f2)$(printf ' %.0s' {0..10});p_author=${p_author:0:10}
-        local p_msg=$(echo -e "$line" | cut -d$'\t' -f3 | sed -e "s/<br>/\\\\n/g");
-        local p_creation=$(echo -e "$line" | cut -d$'\t' -f4)
+        local id=$(echo -e "$line" | cut -d$'|' -f1)$(printf ' %.0s' {0..5});id=${id:0:5}
+        local p_author=$(echo -e "$line" | cut -d$'|' -f2)$(printf ' %.0s' {0..10});p_author=${p_author:0:10}
+        local p_msg=$(echo -e "$line" | cut -d$'|' -f3 | sed -e "s/<br>/\\\\n/g");
+        local p_creation=$(echo -e "$line" | cut -d$'|' -f4)
         local post_header=""
 
         # echo -e "[EXITING DB]:\n$id $p_creation $p_author\n$p_msg";sleep 0.2

@@ -3,8 +3,7 @@
 ### Globals
 new_author=""
 new_title=""
-content_web=""
-content_ssh=""
+content=""
 post_size=0
 abort_post=0
 bump_limit=0
@@ -17,18 +16,15 @@ vim_file="# To exit vim press [ESC] : q [ENTER]\n# To save the file and exit [ES
 ### Queries
 
 # Adding posts
-add_post_query_web="INSERT INTO post (author,thread_id,comment, poster_ip) VALUES ( '%s', %d, '%s', '%s');update thread set replies=replies+1 where id=%d"
-add_post_query_ssh="INSERT INTO post_ssh (author,thread_id,comment, poster_ip) VALUES ( '%s', %d, '%s', '%s');update thread_ssh set replies=replies+1 where id=%d"
+add_post_query="INSERT INTO post (author,thread_id,body,author_ip) VALUES ( '%s', %d, '%s', '%s')"
 # Adding thread
-add_thread_query_web="INSERT INTO thread (author,table_id,comment,title, poster_ip) VALUES ('%s', %d, '%s', '%s', '%s')"
-add_thread_query_ssh="INSERT INTO thread_ssh (author,table_id,comment,title, poster_ip) VALUES ('%s', %d, '%s', '%s', '%s')"
+add_thread_query="INSERT INTO thread (author,board_id,body,title,author_ip) VALUES ('%s', %d, '%s', '%s', '%s')"
 
 ### Functions
 function reset_posting()
 {
     new_title=""
-    content_ssh=""
-    content_web=""
+    content=""
     abort_post=0
 }
 
@@ -143,7 +139,6 @@ function create_body()
 {
 
     local free=0
-    local content=""
     local ret;
 
     # echo "$editor";read
@@ -233,47 +228,27 @@ function create_body()
 
     done
 
-
-    # Separate
-    content_web="$(printf "$content")"
-    content_ssh="$(printf "$content")"
-    
-
     ## Prase the input
     if [ $debug -eq 0 ];
     then
-        # echo -e "$bin_path./postref";read
-        # Web
-        content_web=$("$bin_path./postref" "$content_web")
-        content_web=$("$bin_path./greentext" "$content_web")
-        content_web=$("$bin_path./endline" "$content_web")
-
-        # SSH -- TODO
-        content_ssh=$($bin_path./ssh_postref "$content_ssh")
-        content_ssh=$($bin_path./ssh_greentext "$content_ssh")
-        content_ssh=$($bin_path./endline "$content_ssh")
+        # SSH
+        content=$($bin_path./ssh_postref "$content")
+        content=$($bin_path./ssh_greentext "$content")
+        content=$($bin_path./endline "$content")
 
     else
-        # Web
-        content_web=$($bin_path./postref "$content_web")
-        content_web=$($bin_path./greentext "$content_web")
-        content_web=$($bin_path./endline "$content_web")
-
         # SSH
-        content_ssh=$($bin_path./ssh_postref "$content_ssh")
-        content_ssh=$($bin_path./ssh_greentext "$content_ssh")
-        content_ssh=$($bin_path./endline "$content_ssh")
+        content=$($bin_path./ssh_postref "$content")
+        content=$($bin_path./ssh_greentext "$content")
+        content=$($bin_path./endline "$content")
     fi
 
     # Clean the double quotes and single quotes
-    content_web=$(\
-        printf "$content_web" | sed -e 's/\x27/\\\x27/g' -e 's/"/\\"/g'\
-    )
-    content_ssh=$(\
-        printf "$content_ssh" | sed  -e 's/\\/\\\\/g' -e 's/\x27/\\\x27/g' -e 's/"/\\"/g'\
+    content=$(\
+        printf "$content" | sed  -e 's/\\/\\\\/g' -e 's/\x27/\\\x27/g' -e 's/"/\\"/g'\
     )
 
-    # printf "[ENTERING DB]:\n$content_ssh";read
+    # printf "[ENTERING DB]:\n$content";read
 }
 
 function add_reply()
@@ -281,27 +256,9 @@ function add_reply()
     # User aborted?
     if [ $abort_post -eq 1 ]; then return; fi
 
-    ## Web
-    local query=$(printf "$add_post_query_web" "$new_author" "$thread_id" "$content_web" "$ip" "$thread_id")
-    other_query "$query"
-    # echo -e "add rply:$query";read
-
-    if [ $query_error -eq 1 ]; then
-
-        if [ $debug -eq 0 ]; then
-            read;printf "$query";exit
-        fi
-
-        dialog --backtitle "$banner" \
-            --title "...Error..."\
-            --msgbox "Something went wrong when commiting your post...Please report it at https://github.com/analogcity/shell. Thanks!"\
-            10 60
-            return;
-    fi
-    reset_db
-
     ## SSH
-    query=$(printf "$add_post_query_ssh" "$new_author" "$thread_id" "$content_ssh" "$ip" "$thread_id")
+    query=$(printf "$add_post_query" "$new_author" "$thread_id" "$content" "$ip")
+    # echo "$query" ; read
     other_query "$query"
 
     if [ $query_error -eq 1 ]; then
@@ -332,28 +289,8 @@ function add_thread()
     # User aborted?
     if [ $abort_post -eq 1 ]; then return; fi
 
-    # Web
-    local query=$(printf "$add_thread_query_web" "$new_author" "$board_id" "$content_web" "$new_title" "$ip")
-    other_query "$query"
-
-
-    if [ $query_error -eq 1 ]; then
-
-        if [ $debug -eq 0 ]; then
-            echo "$error";echo "$query";exit
-        fi
-
-        dialog --backtitle "$banner" \
-            --title "...Error..."\
-            --msgbox "Something went wrong when commiting your thread...Please report it at https://github.com/analogcity/shell. Thanks!"\
-            10 60
-        
-        return
-    fi
-    reset_db
-
     # SSH
-    query=$(printf "$add_thread_query_ssh" "$new_author" "$board_id" "$content_ssh" "$new_title" "$ip")
+    query=$(printf "$add_thread_query" "$new_author" "$board_id" "$content" "$new_title" "$ip")
     other_query "$query"
 
 
