@@ -203,9 +203,8 @@ function create_body()
         # Post size restrictions
         content=${content:0:$post_size}
 
-        # TODO: fix this mess
-        # Clean input  from double quotation marks, \, ;, < and double empty lines
-        content=$(printf "$content" | sed -e 's/[\\\;\<]/ /g' -e '/^# /d')
+        # Clean input from \, ;and double empty lines
+        content=$(printf "$content" | sed -e 's/[\\\;]/ /g' -e '/^# /d')
         # echo "$content ${#content}";read
 
         if [ ${#content} -eq 0 ];
@@ -235,7 +234,7 @@ function create_body()
 
     # Clean the double quotes and single quotes
     content=$(\
-        printf "$content" | sed  -e 's/\\/\\\\/g' -e 's/\x27/\\\x27/g' -e 's/"/\\"/g'\
+        printf "$content" | sed -e 's/\\/\\\\/g' -e 's/\x27/\x27\x27/g'\
     )
 
     # printf "[ENTERING DB]:\n$content";read

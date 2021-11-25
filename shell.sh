@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Script name
-s_name="$(basename $0)"
+s_name="$(basename "$0")"
 
 if [ "$s_name" != "shell.sh" ]; then exit; fi
 if [ $# -ne 0 ]; then exit; fi
 
 ## Debug
-if [ $(hostname) = "localhost" ]; then debug=1; else debug=0;fi
+if [ "$(hostname)" = "localhost" ]; then debug=1; else debug=0;fi
 
 
 ## Set locale for special chars
@@ -37,8 +37,8 @@ version="v1.2"
 editor="BASIC"
 usr_id="$(date +%s)analog"
 day=$(date '+%d-%m-%y')
-ip=$(echo $SSH_CLIENT | awk '{ print $1 }')
-banner="[!]Analog City:: Interface $version[!]"
+ip=$(echo "$SSH_CLIENT" | awk '{ print $1 }')
+banner="[!]Analog City:: Interface ${version}[!]"
 bump_limit=60
 max_threads_per_day=10
 
@@ -63,7 +63,7 @@ function main()
     welcome
     # read
 
-    while [ 0 ];
+    while true;
     do
 
         ### Menu to pick from op or reply

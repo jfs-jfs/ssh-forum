@@ -10,17 +10,17 @@ max_iterations=500  # Break if something goes wrong
 
 
 # If query fails
-error_msg="Something went wrong. If persists report it to github.com/analogcity\nPres enter to continue...";
+readonly error_msg="Something went wrong. If persists report it to github.com/analogcity\nPres enter to continue...";
 
 ### Queries
 
 # Board related
-board_query="SELECT id, name, description FROM board"
-thread_list_query="SELECT id, title, creation, author, num_replies, is_pinned FROM thread WHERE board_id=%d ORDER BY is_pinned DESC, last_reply DESC LIMIT 25"
+readonly board_query="SELECT id, name, description FROM board"
+readonly thread_list_query="SELECT id, title, creation, author, num_replies, is_pinned FROM thread WHERE board_id=%d ORDER BY is_pinned DESC, last_reply DESC LIMIT 25"
 
 # Thread related
-thread_query="SELECT processed_text FROM post WHERE thread_id=%d ORDER BY creation"
-thread_op_query="SELECT num_replies, processed_op, body FROM thread WHERE id=%d"
+readonly thread_query="SELECT processed_text FROM post WHERE thread_id=%d ORDER BY creation"
+readonly thread_op_query="SELECT num_replies, processed_op, body FROM thread WHERE id=%d"
 
 ### Functions
 
@@ -29,7 +29,7 @@ function look_around()
 
     # echo "$level";read
 
-    while [ $level -ge 0 -a $max_iterations -ge 0 ];
+    while [ $level -ge 0 ] && [ $max_iterations -ge 0 ];
     do
         # LVL 0
         select_board
@@ -42,7 +42,7 @@ function look_around()
         # echo "watching thread with id $thread_id";read
 
         # Fail safe
-        max_iterations=$(($max_iterations-1))
+        max_iterations=$((max_iterations-1))
     done
 
     level=0
@@ -97,9 +97,9 @@ function select_board()
     if [ -z "$board_id" ]; then
         # echo "Cancel pressed"
         board_id=-1
-        level=$(($level-1))
+        level=$((level-1))
     else
-        level=$(($level+1))
+        level=$((level+1))
     fi
 
 }
@@ -177,20 +177,20 @@ function select_thread()
 
     # Display dialog & get feedback
     "${cmd[@]}" "${options[@]}" 2>/tmp/$usr_id || ret=1
-    thread_n="$(cat /tmp/$usr_id)";thread_n="$(echo $thread_n)"
+    thread_n="$(cat /tmp/$usr_id)";
     # echo "t_id:$thread_n ret:$ret empty:$empty";read
 
     # Where should I go?
-    if [ $ret -eq 0 -a $empty -eq 0 ]; then
+    if [ $ret -eq 0 ] && [ $empty -eq 0 ]; then
         # echo "SELECT";read
         thread_id=$thread_n
-        level=$(($level+1))
+        level=$((level+1))
     elif [ -z "$thread_n" ]; then
         # echo "NEW THREAD";read
         new_thread
     elif [[ ${#thread_n} -lt 7 ]]; then
         thread_id=-1
-        level=$(($level-1))
+        level=$((level-1))
         # echo "BACK";read
     fi
 
@@ -211,7 +211,6 @@ function watch_thread()
 
     local locked_thread=0
     local body=""
-    local posts=""
     local op=""
     local query=$(printf "$thread_op_query" "$thread_id")
     # echo "$query";read
@@ -228,7 +227,7 @@ function watch_thread()
     local t_replies=$(echo -e "$op" | cut -d'|' -f1)
 
     # Should the thread be locked to replys?
-    if [ $t_replies -ge $bump_limit -a $t_pinned -ne 1 ]; then
+    if [ $t_replies -ge $bump_limit ] && [ $t_pinned -ne 1 ]; then
         locked_thread=1
         extra_l="BACK"
         cancel_l="MAXED REPLIES"
@@ -265,7 +264,7 @@ function watch_thread()
         0)
             # BACK
             # echo 'BACK';read
-            level=$(($level-1))
+            level=$((level-1))
             thread_id=-1
             ;;
         3)
