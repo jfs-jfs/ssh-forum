@@ -32,6 +32,7 @@ else
 fi
 
 ## Globals
+DBFILE="data.db"
 version="v1.2"
 editor="BASIC"
 usr_id="$(date +%s)analog"

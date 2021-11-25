@@ -26,9 +26,9 @@ function select_query()
     # echo -e "$query";read
 
     if [ $save_result -eq 0 ]; then
-        query_result=$(mysql -B -u$USER -p$PASS $BDNAME -e "$query")
+        query_result=$(sqlite3 "$DBFILE" "$query")
     else
-        mysql -B -u$USER -p$PASS $BDNAME -e "$query"
+        sqlite3 "$DBFILE" "$query"
     fi
 
     # echo -e "res:\n$query_result";read
@@ -42,6 +42,6 @@ function other_query()
 
     local query="$1"
     # echo -e "$query";read
-    mysql -B -u$USER -p$PASS $BDNAME -e "$query" || query_error=1
+    sqlite3 "$DBFILE" "$query" || query_error=1
     # read
 }
