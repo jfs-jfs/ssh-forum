@@ -118,12 +118,15 @@ function select_thread()
     local msg="Pick the thread you would like to explore:"
     local ok_l="SELECT";
     local options=()
+    local cancel_label
     local query=""
     local empty=0
 
     if [ "$board_id" = "*" ];then
         query="$all_thread_list_query"
+        cancel_label="BACK"
     else
+        cancel_label="NEW THREAD"
         query=$(printf "$thread_list_query" "$board_id")
     fi
 
@@ -172,7 +175,7 @@ function select_thread()
     local cmd=(\
             dialog --colors\
                 --backtitle "$backtitle"\
-                --cancel-label "NEW THREAD"\
+                --cancel-label "$cancel_label"\
                 --ok-label "$ok_l"\
                 --extra-button\
                 --extra-label "BACK"\
@@ -195,7 +198,11 @@ function select_thread()
         level=$((level+1))
     elif [ -z "$thread_n" ]; then
         # echo "NEW THREAD";read
-        new_thread
+        if [ "$board_id" = "*" ];then
+            level=$((level-1))
+        else
+            new_thread
+        fi
     elif [[ ${#thread_n} -lt 7 ]]; then
         thread_id=-1
         level=$((level-1))
