@@ -32,7 +32,7 @@ else
     source /home/$USER/shell/browsing_utils.sh
     source /home/$USER/shell/posting_utils.sh
     source /home/$USER/shell/preference_utils.sh
-    source /home/$USER/shell/chat_util.sh
+    source /home/$USER/shell/chat_utils.sh
 fi
 
 ## Globals
