@@ -22,6 +22,7 @@ then
     source browsing_utils.sh
     source posting_utils.sh
     source preference_utils.sh
+    source chat_utils.sh
 else
     bin_path="/home/lowlife/bin/"
     source /home/lowlife/shell/vars.sh
@@ -29,6 +30,7 @@ else
     source /home/lowlife/shell/browsing_utils.sh
     source /home/lowlife/shell/posting_utils.sh
     source /home/lowlife/shell/preference_utils.sh
+    source /home/lowlife/shell/chat_util.sh
 fi
 
 ## Globals
@@ -94,6 +96,11 @@ function main()
             # read
             ;;
 
+            "<Chat>")
+            start_chat
+            # read
+            ;;
+
             *)
             clear
             exit
@@ -121,8 +128,9 @@ function get_option()
             --title "...Decisions..."\
             --cancel-label "EXIT"\
             --menu "Please choose one option:"\
-            13 80 5\
+            13 80 6\
             "<Look around>"     "Surf the system."\
+            "<Chat>"            "Real time chat."\
             "<Pick editor>"     "Pick the editor to use."\
             "<Pick nickname>"   "Default Pagan"\
             "<Pick theme>"      "Pick the theme to use."\
