@@ -17,6 +17,7 @@ readonly error_msg="Something went wrong. If persists report it to github.com/an
 # Board related
 readonly board_query="SELECT id, name, description FROM board"
 readonly thread_list_query="SELECT id, title, creation, author, num_replies, is_pinned FROM thread WHERE board_id=%d ORDER BY is_pinned DESC, last_reply DESC LIMIT 25"
+readonly all_thread_list_query="SELECT id, title, creation, author, num_replies, is_pinned FROM thread ORDER BY is_pinned DESC, last_reply DESC LIMIT 25"
 
 # Thread related
 readonly thread_query="SELECT processed_text FROM post WHERE thread_id=%d ORDER BY creation"
@@ -72,6 +73,8 @@ function select_board()
         local res="$query_result"
         reset_db
 
+        ## Add a board for all
+        options+=("*" "<All>         :: The most recently bumped threads")
         # Prase database output
         while read -r line
         do
@@ -112,12 +115,17 @@ function select_thread()
     # Dialog parameters
     local backtitle=$banner
     local title="...Pick a thread..."
-    local msg="Pick the board you would like to explore:"
+    local msg="Pick the thread you would like to explore:"
     local ok_l="SELECT";
     local options=()
-
-    local query=$(printf "$thread_list_query" "$board_id")
+    local query=""
     local empty=0
+
+    if [ "$board_id" = "*" ];then
+        query="$all_thread_list_query"
+    else
+        query=$(printf "$thread_list_query" "$board_id")
+    fi
 
     # echo -e "$query"; read
     select_query "$query"
