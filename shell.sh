@@ -17,6 +17,7 @@ export LC_ALL=en_US.UTF-8 ## bash
 if [ $debug -eq 0 ];
 then
     bin_path="bin/"
+    DBFILE="data.db"
     source vars.sh
     source database_utils.sh
     source browsing_utils.sh
@@ -24,17 +25,17 @@ then
     source preference_utils.sh
     source chat_utils.sh
 else
-    bin_path="/home/lowlife/bin/"
-    source /home/lowlife/shell/vars.sh
-    source /home/lowlife/shell/database_utils.sh
-    source /home/lowlife/shell/browsing_utils.sh
-    source /home/lowlife/shell/posting_utils.sh
-    source /home/lowlife/shell/preference_utils.sh
-    source /home/lowlife/shell/chat_util.sh
+    bin_path="/home/$USER/shell/bin/"
+    DBFILE="/home/$USER/shell/data.db"
+    source /home/$USER/shell/vars.sh
+    source /home/$USER/shell/database_utils.sh
+    source /home/$USER/shell/browsing_utils.sh
+    source /home/$USER/shell/posting_utils.sh
+    source /home/$USER/shell/preference_utils.sh
+    source /home/$USER/shell/chat_util.sh
 fi
 
 ## Globals
-DBFILE="data.db"
 version="v1.2"
 editor="BASIC"
 usr_id="$(date +%s)analog"
