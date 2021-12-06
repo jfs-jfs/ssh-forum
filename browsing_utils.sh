@@ -17,7 +17,7 @@ readonly error_msg="Something went wrong. If persists report it to github.com/an
 # Board related
 readonly board_query="SELECT id, name, description FROM board"
 readonly thread_list_query="SELECT id, title, creation, author, num_replies, is_pinned FROM thread WHERE board_id=%d ORDER BY is_pinned DESC, last_reply DESC LIMIT 25"
-readonly all_thread_list_query="SELECT id, title, creation, author, num_replies, is_pinned FROM thread ORDER BY is_pinned DESC, last_reply DESC LIMIT 25"
+readonly all_thread_list_query="SELECT id, title, creation, author, num_replies, is_pinned FROM thread ORDER BY last_reply DESC LIMIT 25"
 
 # Thread related
 readonly thread_query="SELECT processed_text FROM post WHERE thread_id=%d ORDER BY creation"
