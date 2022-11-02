@@ -109,7 +109,7 @@ function select_board()
 
 function select_thread()
 {
-    if [ $board_id -eq -1 ];then return;fi  # Return to pick board
+    if [ "$board_id" -eq -1 ];then return;fi  # Return to pick board
     if [ $level -ne 1 ]; then return; fi    # This is level 1
 
     # Dialog parameters
