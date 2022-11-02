@@ -264,7 +264,9 @@ function watch_thread()
     dialog\
         --extra-label "$extra_l" --extra-button\
         --ok-label "$ok_l"\
+        --yes-label "$ok_l"\
         --cancel-label "$cancel_l"\
+        --no-label "$cancel_l"\
         --colors\
         --backtitle "$backtitle"\
         --title "$title"\

@@ -58,3 +58,10 @@ BEGIN
             || new.creation ||'] :: [' || new.id || '] (Scroll: j-k)\Zn'
     WHERE id = new.id;
 END;
+
+
+INSERT INTO board (name, description) VALUES
+    ('The highway',"Share info, doesn't matter the subject"),
+    ('Meatspace', "Humanities, experiences, rants, etc"),
+    ('Programming', "Share projects, tips, resources or ask questions"),
+    ('Meta', "Disscusions about the site and updates");
