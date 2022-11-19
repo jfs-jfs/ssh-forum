@@ -15,7 +15,7 @@ docker build -t analogcity .
 Start the container
 
 ```bash
-docker run -p<port you want to run it>:22 analogcity
+docker run -p<port you want to run it>:22 -v $(pwd)/clean_database.db:/lowlife/data.db analogcity
 ```
 
 ## Manual install
