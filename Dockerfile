@@ -30,15 +30,12 @@ COPY ./sshd_banner /etc/ssh/sshd_banner
 COPY ./sshd_config /etc/ssh/sshd_config
 
 # Evade ssh host key changed warning on new containers
-COPY /etc/ssh/ssh_host_ecdsa_key /etc/ssh/ssh_host_ecdsa_key
-COPY /etc/ssh/ssh_host_ecdsa_key.pub /etc/ssh/ssh_host_ecdsa_key.pub
-COPY /etc/ssh/ssh_host_ed25519_key /etc/ssh/ssh_host_ed25519_key
-COPY /etc/ssh/ssh_host_ed25519_key.pub /etc/ssh/ssh_host_ed25519_key.pub
-COPY /etc/ssh/ssh_host_rsa_key /etc/ssh/ssh_host_rsa_key
-COPY /etc/ssh/ssh_host_rsa_key.pub /etc/ssh/ssh_host_rsa_key.pub
-
-# New hostname to disable debug mode
-RUN hostname analogplace
+COPY ./ssh_host_ecdsa_key /etc/ssh/
+COPY ./ssh_host_ecdsa_key.pub /etc/ssh/
+COPY ./ssh_host_ed25519_key /etc/ssh/
+COPY ./ssh_host_ed25519_key.pub /etc/ssh/
+COPY ./ssh_host_rsa_key /etc/ssh/
+COPY ./ssh_host_rsa_key.pub /etc/ssh/
 
 # Ready to go
 ENTRYPOINT ["/usr/sbin/sshd", "-D"]

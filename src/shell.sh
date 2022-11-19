@@ -7,8 +7,8 @@ if [ "$s_name" != "shell.sh" ]; then exit; fi
 if [ $# -ne 0 ]; then exit; fi
 
 ## Debug
-if [ "$(hostname)" = "localhost" ]; then debug=1; else debug=0;fi
-
+# if [ "$(hostname)" = "localhost" ]; then debug=1; else debug=0;fi
+debug=0
 
 ## Set locale for special chars
 export LC_ALL=en_US.UTF-8 ## bash

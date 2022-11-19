@@ -4,3 +4,4 @@ data.db
 bin/
 bin/*
 *.swp
+ssh_*
