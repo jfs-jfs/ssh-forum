@@ -23,10 +23,6 @@ USER lowlife
 WORKDIR /lowlife/utils
 RUN make all
 
-# Create database, comment out if not a new installation
-WORKDIR /lowlife
-RUN sqlite3 data.db < db.sql
-
 # Set configuration files
 USER root
 WORKDIR /
