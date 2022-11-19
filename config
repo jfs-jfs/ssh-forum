@@ -1,0 +1,12 @@
+export VERSION="V2.1.1"
+export BANNER="Banner string here"
+
+export THREADS_X_DAY=10
+export BUMP_LIMIT=60
+export POST_SIZE=1024
+
+export AUTHOR_NAME="Anon"
+export EDITOR="BASIC" # Only one that works
+export THEME="default"
+
+export WELCOME_MSG="WELCOME MESSAGE HERE"

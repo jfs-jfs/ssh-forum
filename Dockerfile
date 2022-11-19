@@ -16,6 +16,7 @@ RUN echo "lowlife:hightech" | chpasswd
 
 # Get files
 COPY ./src /lowlife
+COPY ./config /lowlife/config.sh
 RUN chown -R lowlife:lowlife /lowlife && chmod +x /lowlife/shell.sh
 
 # Set up utils

@@ -9,6 +9,8 @@ if [ $# -ne 0 ]; then exit; fi
 ## Debug
 if [ "$(hostname)" = "localhost" ]; then debug=1; else debug=0;fi
 
+# Import configuration
+source config.sh
 
 ## Set locale for special chars
 export LC_ALL=en_US.UTF-8 ## bash
@@ -18,7 +20,6 @@ if [ $debug -eq 0 ];
 then
     bin_path="bin/"
     DBFILE="data.db"
-    source vars.sh
     source database_utils.sh
     source browsing_utils.sh
     source posting_utils.sh
@@ -27,7 +28,6 @@ then
 else
     bin_path="/home/$USER/shell/bin/"
     DBFILE="/home/$USER/shell/data.db"
-    source /home/$USER/shell/vars.sh
     source /home/$USER/shell/database_utils.sh
     source /home/$USER/shell/browsing_utils.sh
     source /home/$USER/shell/posting_utils.sh
@@ -36,20 +36,19 @@ else
 fi
 
 ## Globals
-version="v2.0"
-editor="BASIC"
+version="$VERSION"
 usr_id="$(date +%s)analog"
 day=$(date '+%d-%m-%y')
 ip=$(echo "$SSH_CLIENT" | awk '{ print $1 }')
-banner="[!]Analog City:: Interface ${version}[!]"
-bump_limit=60
-max_threads_per_day=10
+banner="[!]$BANNER ${version}[!]"
+bump_limit=$BUMP_LIMIT
+max_threads_per_day=$THREADS_X_DAY
 
 # Default preferences
-post_size=1024
-editor="BASIC"
-theme="dafault"
-new_author="Pagan"
+post_size=$POST_SIZE
+editor="$EDITOR"
+theme="$THEME"
+new_author="$AUTHOR_NAME"
 new_title=""
 
 
@@ -118,7 +117,7 @@ function welcome()
 {
     dialog --backtitle "$banner" \
         --title "...Welcome..."\
-        --msgbox "\nWhoever you are, whom the chances of the Internet have led here, welcome. Here you will find nothing or little of what the world today appreciates. Neither the concern of being different.\n"\
+        --msgbox "\n$WELCOME_MSG\n"\
         10 60
 }
 

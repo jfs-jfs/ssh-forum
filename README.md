@@ -5,30 +5,36 @@ An ssh forum, nothing more nothing less
 ### Docker Install
 
 #### From Docker Hub image
-Grab the database
+Grab the database and configuration
 ```bash
 wget https://raw.githubusercontent.com/analogcity/analogcity/master/clean_database.db
+wget https://raw.githubusercontent.com/analogcity/analogcity/master/config
 ```
-Start a container
+
+Edit the configuration to your liking and start a container
 ```bash
-docker run --rm -d -p2222:22 -v $(pwd)/clean_database.db:/lowlife/data.db analogcity/ssh_forum:latest
+docker run \
+    --rm -d -p2222:22 \
+    -v $(pwd)/clean_database.db:/lowlife/data.db \
+    analogcity/ssh_forum:latest
 ```
 
 #### From cloned repo
 Clone this repo
-
 ```bash
 git clone https://github.com/analogcity/ssh-forum && cd analogcity
 ```
 Build the image
-
 ```bash
 docker build -t analogcity .
 ```
-Start the container
 
+Edit the configuration to your liking and start a container
 ```bash
-docker run --rm -d -p2222:22 -v $(pwd)/clean_database.db:/lowlife/data.db analogcity
+docker run \
+    --rm -d -p2222:22 \
+    -v $(pwd)/clean_database.db:/lowlife/data.db \
+    analogcity
 ```
 
 ### Manual install
