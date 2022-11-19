@@ -2,7 +2,7 @@ FROM ubuntu:latest
 EXPOSE 22
 
 # System update
-RUN apt update && apt upgrade
+RUN apt update
 
 # Get dependencies
 RUN apt --assume-yes install dialog openssh-server sqlite3 make gcc
