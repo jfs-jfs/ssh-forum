@@ -5,3 +5,4 @@ bin/
 bin/*
 *.swp
 ssh_*
+chat
