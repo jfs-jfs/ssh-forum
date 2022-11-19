@@ -36,7 +36,7 @@ else
 fi
 
 ## Globals
-version="v1.2"
+version="v2.0"
 editor="BASIC"
 usr_id="$(date +%s)analog"
 day=$(date '+%d-%m-%y')
