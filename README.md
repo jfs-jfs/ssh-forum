@@ -18,7 +18,7 @@ docker run --rm -d -p2222:22 -v $(pwd)/clean_database.db:/lowlife/data.db analog
 Clone this repo
 
 ```bash
-git clone https://github.com/analogcity/analogcity && cd analogcity
+git clone https://github.com/analogcity/ssh-forum && cd analogcity
 ```
 Build the image
 
