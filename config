@@ -1,0 +1,12 @@
+export VERSION="V2.1"
+export BANNER="AnalogCity :: Interface "
+
+export THREADS_X_DAY=10
+export BUMP_LIMIT=160
+export POST_SIZE=1024
+
+export AUTHOR_NAME="Pagan"
+export EDITOR="BASIC" # Only one that works
+export THEME="default"
+
+export WELCOME_MSG="Whoever you are, whom the chances of the Internat have led here, welcome. Here you will find nothing or little of what the world today appreciates. Neither the concern of being different."
