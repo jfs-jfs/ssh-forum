@@ -11,7 +11,7 @@ You will need to have installed `git` and `docker`
 ```bash
 git clone git@github.com:jfs-jfs/ssh-forum.git
 cd ssh-forum
-docker build -t ssh-forum . && docker run -p 2222:2222 ssh-forum -d
+docker build -t ssh-forum . && docker run -d -p 2222:2222 ssh-forum
 ```
 
 ### Manual
