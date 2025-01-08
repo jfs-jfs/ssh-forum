@@ -310,7 +310,7 @@ thread_controller() {
     local thread_body
     local replies
 
-    title="[ $(thread_file_to_thread_title "$thread_file") ] :: [ $(thread_file_to_thread_author "$thread_file") ] :: [ $(thread_file_to_thread_creation_date "$thread_file") ]"
+    title="[ $(thread_file_to_thread_title "$thread_file") ] :: [ $(thread_file_to_thread_author "$thread_file") ] :: [ $(thread_file_to_thread_creation_date "$thread_file") ] (j-k to scroll)"
     thread_body="$(thread_file_to_thread_body "$thread_file")"
     replies="$(thread_file_to_thread_replies "$thread_file")"
 
