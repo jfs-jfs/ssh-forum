@@ -25,6 +25,28 @@ paths_to_thread_titles() {
   done
 }
 
+paths_to_thread_board_titles() {
+  local paths=("$@")
+
+  for file in "${paths[@]}"; do
+    if [ ! -f "$file" ]; then
+      error "Unable to find file -> $file"
+      continue
+    fi
+
+    local t_title="$file$(printf ' %.0s' {0..60})"
+    local t_last_reply="$(date -r "$file" '+%x %X')"
+    local t_replies="$(head -n1 "$file")"
+    local t_author="$(head -n2 "$file" | tail -n1)          "
+
+    t_title=${t_title:0:60}
+    t_author=${t_author:0:10}
+
+    echo "$t_title"
+    echo "$t_author :: $t_replies :: $t_last_reply"
+  done
+}
+
 # Extracts the author name of a given thread file
 # Arguments:
 #   - thread file path

@@ -72,8 +72,51 @@ board_selector_menu() {
     "${boards[@]}"
 }
 
+# Displays thread selector menu for the meta board.
+# Returns either the selected thread name, BACK on back selected and NEW THREAD on new thread selected.
+# Arguments:
+#   - threads Required
+thread_selector_meta_menu() {
+  local title="[[Thread Selection]]"
+  local msg="UP & DOWN to move selection, TAB to select action"
+  local ok_label="SELECT"
+  local threads=("$@")
+
+  if [ -z "${threads[*]}" ]; then
+    threads=("EMPTY" "BOARD")
+    ok_label="BACK"
+  fi
+
+  local selected_thread
+  selected_thread="$(dialog --backtitle "$BANNER"\
+    --colors\
+    --stdout\
+    --title "$title"\
+    --ok-label "$ok_label"\
+    --cancel-label "BACK"\
+    --menu "$msg"\
+    "$THREAD_SELECTOR_HEIGHT"\
+    "$THREAD_SELECTOR_WIDTH"\
+    "$THREAD_SELECTOR_MENU_HEIGHT"\
+    "${threads[@]}")"
+
+  ret=$?
+  debug "return code -> $ret"
+  case "$ret" in
+    0)
+      if [ "EMPTY" = "$selected_thread" ]; then
+        echo "BACK"
+      else
+        echo "$selected_thread" 
+      fi
+      ;;
+    *) echo "BACK" ;;
+  esac
+}
 # Displays thread selector menu.
 # Returns either the selected thread name, BACK on back selected and NEW THREAD on new thread selected.
+# Arguments:
+#   - threads Required
 thread_selector_menu() {
   local title="[[Thread Selection]]"
   local msg="UP & DOWN to move selection, TAB to select action"

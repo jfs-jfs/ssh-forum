@@ -117,7 +117,9 @@ boards_controller() {
   while ! $go_back;do
     local selected_board
 
-    selected_board=$(board_selector_menu "${BOARDS[@]}")
+    local boards=("<*>" "The most recently bumped threads" "${BOARDS[@]}")
+
+    selected_board=$(board_selector_menu "${boards[@]}")
 
     if [ -z "$selected_board" ]; then
       go_back=true
@@ -129,13 +131,61 @@ boards_controller() {
   done
 }
 
+# Meta Board Controller
+# Controller for the special board <*> which is the most recent threads inside the
+# whole of the system
+meta_board_controller() {
+  local go_back=false
+  while ! $go_back;do
+    shopt -s nullglob
+    local thread_files=("./boards/"*"/"*)
+    shopt -u nullglob
+
+    if [ -n "${thread_files[*]}" ];then
+      # Sort them by modification date
+      debug "pre sorted thread files -> ${thread_files[*]}"
+      IFS=$'\n' thread_files=($(ls -t "${thread_files[@]}"))
+      debug "sorted thread files -> ${thread_files[*]}"
+
+      thread_files=("${thread_files[@]:0:$MAX_ACTIVE_THREADS_PER_BOARD}")
+    fi
+
+    # Generate titles out of them
+    mapfile -t thread_titles <<< "$(paths_to_thread_board_titles "${thread_files[@]}")"
+
+    # Display them and wait for user input
+    local selected_thread
+    selected_thread="$(thread_selector_meta_menu "${thread_titles[@]}")"
+
+    # Process input
+    debug "Thread selection -> $selected_thread"
+    case "$selected_thread" in
+      "BACK") go_back=true ;;
+      "NEW THREAD") thread_creation_controller "$board_dir" ;;
+      *)
+        local clean_thread_file="$(xargs <<< "$selected_thread")"
+        thread_controller "$(dirname "$clean_thread_file")" "$(basename "$clean_thread_file")"
+      ;;
+    esac
+
+  done
+}
+
+# Board Controller
+# Controls how the threads in a board should be displayed given a board name
 board_controller() {
   if [ $# != 1 ]; then
     error "Called board controller without board argument!!"
     return
   fi
 
+
   local board="$1"
+  if [ "$board" = "<*>" ]; then
+    meta_board_controller
+    return
+  fi
+
   local board_dir="./boards/$board"
   debug "Board controller for -> $board"
 
