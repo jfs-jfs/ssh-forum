@@ -1,6 +1,4 @@
-vars.sh
-newthings/
-data.db
-bin/
-bin/*
-*.swp
+*logs
+*feed
+borads/*
+archive/*

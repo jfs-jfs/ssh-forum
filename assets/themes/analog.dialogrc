@@ -1,0 +1,149 @@
+# $Id: slackware.rc,v 1.2 2001/12/02 21:19:05 Patrick.J.Volkerding Exp $
+# Run-time configuration file for dialog, matches Slackware color scheme.
+#
+# Types of values:
+#
+# Number     -  <number>
+# String     -  "string"
+# Boolean    -  <ON|OFF>
+# Attribute  -  (foreground,background,highlight?)
+# edited by alislack
+
+
+# Set aspect-ration.
+aspect = 0
+
+# Set separator (for multiple widgets output).
+separate_widget = ""
+
+# Set tab-length (for textbox tab-conversion).
+tab_len = 2
+
+# Make tab-traversal for checklist, etc., include the list.
+visit_items = ON
+# visit_items = OFF
+
+# Shadow dialog boxes? This also turns on color.
+use_shadow = ON
+
+# Turn color support ON or OFF
+use_colors = ON
+
+# Screen color
+screen_color = (BLUE,BLACK,OFF)
+
+# Shadow color
+shadow_color = (WHITE,BLACK,OFF)
+
+# Dialog box color
+dialog_color = (WHITE,BLACK,OFF)
+
+# Dialog box title color
+title_color = (MAGENTA,BLACK,ON)
+
+# Dialog box border color
+border_color = (BLUE,BLACK,OFF)
+
+# Active button color
+button_active_color = (CYAN,BLACK,ON)
+
+# Inactive button color
+button_inactive_color = (BLUE,BLACK,OFF)
+
+# Active button key color
+button_key_active_color = (CYAN,BLACK,ON)
+
+# Inactive button key color
+button_key_inactive_color = (BLUE,BLACK,OFF)
+
+# Active button label color
+button_label_active_color = (CYAN,BLACK,ON)
+
+# Inactive button label color
+button_label_inactive_color = (BLUE,BLACK,OFF)
+
+# Input box color TODO
+inputbox_color = (BLUE,WHITE,OFF)
+
+# Input box border color TODO
+inputbox_border_color = (BLACK,BLACK,ON)
+
+# Search box color TODO
+searchbox_color = (YELLOW,BLACK,ON)
+
+# Search box title color TODO
+searchbox_title_color = (WHITE,WHITE,ON)
+
+# Search box border color
+searchbox_border_color = (RED,WHITE,OFF)
+
+# File position indicator color
+position_indicator_color = (YELLOW,BLACK,OFF)
+
+# Menu box color
+menubox_color = (GREEN,BLACK,OFF)
+
+
+# Menu box border color
+menubox_border_color = (GREEN,BLACK,ON)
+
+
+#
+# Item color
+item_color = (GREEN,BLACK,OFF)
+
+# Selected item color
+item_selected_color = (CYAN,BLACK,OFF)
+
+# Tag color
+tag_color = (YELLOW,BLACK,ON)
+
+# Selected tag color
+tag_selected_color = (WHITE,BLUE,OFF)
+
+# Tag key color
+tag_key_color = (CYAN,BLACK,OFF)
+
+# Selected tag key color
+tag_key_selected_color = (GREEN,BLUE,ON)
+
+# Check box color
+check_color = (CYAN,BLACK,OFF)
+
+# Selected check box color
+check_selected_color = (WHITE,CYAN,ON)
+
+# Up arrow color
+uarrow_color = (GREEN,BLUE,ON)
+
+# Down arrow color
+darrow_color = (GREEN,BLUE,ON)
+
+# Item help-text color
+itemhelp_color = (MAGENTA,BLACK,OFF)
+
+
+# alislack fix
+# border2 are the shadows arounds the boxes
+# change from dialog_color to GREEN,BLACK
+# to remove the shadow at bottom of screen
+#
+# Dialog box border2 color
+#border2_color = dialog_color
+border2_color = (BLUE,BLACK,OFF)
+
+# Input box border2 color
+inputbox_border2_color = (GREEN,BLACK,ON)
+
+
+# Search box border2 color
+searchbox_border2_color = (GREEN,BLACK,ON)
+
+
+# Menu box border2 color
+menubox_border2_color = (GREEN,BLACK,ON)
+
+
+
+
+
