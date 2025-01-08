@@ -41,6 +41,9 @@ export USER_NAME_MAX_LENGTH=12
 export USER_NAME_MIN_LENGTH=3
 export AUTHOR="pagan"
 export DIALOGRC="./assets/themes/analog.dialogrc"
+if [ -n "$1" ] && [ -f "./assets/themes/$1.dialogrc" ]; then
+  export DIALOGRC="./assets/themes/$1.dialogrc" 
+fi
 
 # User interface
 export WELCOME_WIDTH=60

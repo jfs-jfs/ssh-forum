@@ -34,7 +34,7 @@ func main() {
 		wish.WithMiddleware(
 			func(next ssh.Handler) ssh.Handler {
 				return func(s ssh.Session) {
-					cmd := wish.Command(s, "bash", "entrypoint.sh")
+					cmd := wish.Command(s, "bash", "entrypoint.sh", s.User())
 					if err := cmd.Run(); err != nil {
 						wish.Fatalln(s, err)
 					}
