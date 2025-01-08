@@ -24,7 +24,7 @@ visit_items = ON
 # visit_items = OFF
 
 # Shadow dialog boxes? This also turns on color.
-use_shadow = ON
+use_shadow = OFF
 
 # Turn color support ON or OFF
 use_colors = ON
@@ -45,19 +45,19 @@ title_color = (MAGENTA,BLACK,ON)
 border_color = (BLUE,BLACK,OFF)
 
 # Active button color
-button_active_color = (CYAN,BLACK,ON)
+button_active_color = (MAGENTA,BLACK,ON)
 
 # Inactive button color
 button_inactive_color = (BLUE,BLACK,OFF)
 
 # Active button key color
-button_key_active_color = (CYAN,BLACK,ON)
+button_key_active_color = (MAGENTA,BLACK,ON)
 
 # Inactive button key color
 button_key_inactive_color = (BLUE,BLACK,OFF)
 
 # Active button label color
-button_label_active_color = (CYAN,BLACK,ON)
+button_label_active_color = (MAGENTA,BLACK,ON)
 
 # Inactive button label color
 button_label_inactive_color = (BLUE,BLACK,OFF)
@@ -81,31 +81,29 @@ searchbox_border_color = (RED,WHITE,OFF)
 position_indicator_color = (YELLOW,BLACK,OFF)
 
 # Menu box color
-menubox_color = (GREEN,BLACK,OFF)
-
+menubox_color = (BLUE,BLACK,OFF)
 
 # Menu box border color
-menubox_border_color = (GREEN,BLACK,ON)
-
+menubox_border_color = (BLUE,BLACK,ON)
 
 #
-# Item color
-item_color = (GREEN,BLACK,OFF)
+# Item color -- good green
+item_color = (WHITE,BLACK,OFF)
 
 # Selected item color
-item_selected_color = (CYAN,BLACK,OFF)
+item_selected_color = (BLACK,MAGENTA,OFF)
 
 # Tag color
-tag_color = (YELLOW,BLACK,ON)
+tag_color = (BLUE,BLACK,OFF)
 
 # Selected tag color
-tag_selected_color = (WHITE,BLUE,OFF)
+tag_selected_color = (MAGENTA,BLACK,ON)
 
 # Tag key color
-tag_key_color = (CYAN,BLACK,OFF)
+tag_key_color = (BLUE,BLACK,OFF)
 
 # Selected tag key color
-tag_key_selected_color = (GREEN,BLUE,ON)
+tag_key_selected_color = (BLACK,MAGENTA,ON)
 
 # Check box color
 check_color = (CYAN,BLACK,OFF)
@@ -141,9 +139,5 @@ searchbox_border2_color = (GREEN,BLACK,ON)
 
 
 # Menu box border2 color
-menubox_border2_color = (GREEN,BLACK,ON)
-
-
-
-
+menubox_border2_color = (BLUE,BLACK,ON)
 
