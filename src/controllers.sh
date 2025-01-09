@@ -43,7 +43,16 @@ archive_controller() {
     local archived_files
     mapfile -d $'\0' archived_files < <(find "./$ARCHIVE" -type f -print0)
 
-    selected_file="$(gum filter "${archived_files[@]}")"
+    selected_file="$(\
+      gum filter --placeholder="Write to filter, UP & DOWN to move, ENTER to select and ESC to go back"\
+        --indicator="->"\
+        --sort\
+        --reverse\
+        --prompt="[ Search >] "\
+        --prompt.foreground=212\
+        --cursor-text.foreground=75\
+        "${archived_files[@]}"\
+      )"
     if [ -z "$selected_file" ]; then
       exit_archive=true
       continue
