@@ -3,7 +3,8 @@ FROM golang:1.23.0
 ENV TERM=xterm-256color
 
 RUN apt update && apt upgrade -y
-RUN apt install dialog
+RUN apt install dialog locales
+RUN locale-gen en_US.UTF-8
 
 WORKDIR /usr/src/app
 
