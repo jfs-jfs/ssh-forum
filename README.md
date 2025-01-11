@@ -42,7 +42,7 @@ cd ssh-forum
 docker build -t ssh-forum . && docker run -d -p 2222:2222 ssh-forum
 ```
 
-### Doker with persitance
+### Doker with persistance
 This way you can keep the contents of the threads even if you kill the container
 
 First you will need to add a `.dockerignore` with this contents:
