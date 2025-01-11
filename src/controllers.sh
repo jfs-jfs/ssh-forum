@@ -317,6 +317,9 @@ thread_creation_controller() {
       continue
     fi
 
+    thread_body="$(highlight_urls_in_thread_body "$thread_body")"
+    thread_body="$(highlight_green_text "$thread_body")"
+
     valid_body=true
   done
 
@@ -422,6 +425,10 @@ new_reply_controller() {
       error="Exceeds $REPLY_MAX_LENGTH charactes (by $((${#reply_body} - REPLY_MAX_LENGTH)))"
       continue
     fi
+
+    reply_body="$(highlight_urls_in_thread_body "$reply_body")"
+    reply_body="$(highlight_green_text "$reply_body")"
+    reply_body="$(highlight_references_in_thread_boady "$reply_body")"
 
     valid_reply=true
   done
