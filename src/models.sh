@@ -105,3 +105,47 @@ thread_file_to_thread_creation_date() {
   head -n3 "$1" | tail -n1
 }
 
+# Highlight URLs given a text
+# Arguments:
+#   - text to highlight
+highlight_urls_in_thread_body() {
+  if [ $# -ne 1 ]; then
+    error "Missing body to work with"
+    return
+  fi
+
+  local url_regex="https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,4}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)"
+  local higlight_pattern="\\\\Zb\\\\Zu\\0\\\\Zn"
+
+  echo -E "$1" | sed -E "s/$url_regex/$higlight_pattern/g" 
+}
+
+# Highlight references given a text
+# Arguments:
+#   - text to highlight
+highlight_references_in_thread_boady() {
+  if [ $# -ne 1 ]; then
+    error "Missing body to work with"
+    return
+  fi
+
+  local ref_regex="#[0-9]+"
+  local higlight_pattern="\\\\Zb\\\\Z5\\0\\\\Zn"
+
+  echo -E "$1" | sed -E "s/$ref_regex/$higlight_pattern/g" 
+}
+
+# Highlight green text given a text
+# Arguments:
+#   - text to highlight
+highlight_green_text() {
+  if [ $# -ne 1 ]; then
+    error "Missing body to work with"
+    return
+  fi
+
+  local green_text_regex=">.+"
+  local higlight_pattern="\\\\Zb\\\\Z2\\0\\\\Zn"
+
+  echo -E "$1" | sed -E "s/$green_text_regex/$higlight_pattern/g" 
+}
