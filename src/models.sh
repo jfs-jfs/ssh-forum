@@ -36,8 +36,8 @@ paths_to_thread_board_titles() {
 
     local t_title="$file$(printf ' %.0s' {0..60})"
     local t_last_reply="$(date -r "$file" '+%x %X')"
-    local t_replies="$(head -n1 "$file")"
-    local t_author="$(head -n2 "$file" | tail -n1)          "
+    local t_replies="$(printf "%0.3d" "$(thread_file_to_thread_replies "$file")")"
+    local t_author="$(thread_file_to_thread_author "$file")          "
 
     t_title=${t_title:0:60}
     t_author=${t_author:0:10}
