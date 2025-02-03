@@ -1,6 +1,8 @@
 # SSH Forum
 A ssh forum, nothing more nothing less
 
+![analog](https://github.com/user-attachments/assets/5bae266e-77a3-44e4-bdad-c75d753cd7cc)
+
 ## Features
 - Anonymous text Forum
 - Chat
