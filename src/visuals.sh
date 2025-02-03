@@ -187,6 +187,7 @@ display_thread() {
   local new_reply=true
   dialog --backtitle "$BANNER"\
     --title "$title"\
+    --no-collapse\
     --yes-label "$new_reply_label"\
     --no-label "BACK"\
     --colors\
