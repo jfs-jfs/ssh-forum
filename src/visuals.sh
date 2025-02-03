@@ -242,7 +242,7 @@ user_name_form() {
     --colors\
     --ok-label "NEXT"\
     --max-input "$USER_NAME_MAX_LENGTH"\
-    --inputbox "Between $USER_NAME_MIN_LENGTH and $USER_NAME_MAX_LENGTH characters.\n\\Z1\\Zb$error\\Zn"\
+    --inputbox "Between $USER_NAME_MIN_LENGTH and $USER_NAME_MAX_LENGTH characters. Blank treated as Cancel.\n\\Z1\\Zb$error\\Zn"\
     "$USER_NAME_FORM_HEIGHT"\
     "$USER_NAME_FORM_WIDTH"
 }
