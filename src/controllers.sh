@@ -42,9 +42,7 @@ user_name_controller() {
     new_username="$(user_name_form "$error" | xargs)"
 
     if [ -z "$new_username" ];then
-      error "empty username not allowed!"
-      error="Empty username"
-      continue
+      return
     fi
 
     # Parse input
