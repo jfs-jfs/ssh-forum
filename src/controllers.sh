@@ -154,7 +154,6 @@ chat_controller() {
 
     # Format input
     new_message="[$AUTHOR] @ $(date +%x--%X): $new_message"
-    new_message=$(echo "$new_message" | fold -w $((CHAT_FEED_WIDTH - 2)))
 
     # Append to chat feed
     echo -e "$new_message\n" >> "$CHAT_FILE"
@@ -491,6 +490,6 @@ new_reply_controller() {
   sed -i "1s/.*/$next_reply_number/" "$filepath"
 
   # Add reply
-  reply_body="$(fold -w $((THREAD_FEED_WIDTH - 6)) <<< "$reply_body" | sed -e 's/^/ /')"
+  reply_body="$(echo "$reply_body" | sed -e 's/^/ /')"
   echo -e "\Z5[[$AUTHOR :: $(date '+%x %X') :: #$next_reply_number]]\Zn\n$reply_body\Zn\n" >> "$filepath"
 }
