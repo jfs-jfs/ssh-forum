@@ -41,8 +41,6 @@ user_name_controller() {
 
   while ! $ok_username; do
     new_username="$(user_name_form "$error" | awk '{$1=$1; print}')"
-    echo "$new_username"
-    read -r
 
     if [ -z "$new_username" ]; then
       return
