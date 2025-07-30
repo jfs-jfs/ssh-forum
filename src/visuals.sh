@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Displays the welcome banner. The contents of it are declared inside the file ´assets/welcome_banner´ 
+# Displays the welcome banner. The contents of it are declared inside the file ´assets/welcome_banner´
 welcome_banner() {
   local title='[[Welcome]]'
-  dialog --backtitle "$BANNER"\
-    --title "$title"\
-    --msgbox "\n$(cat ./assets/welcome_banner)\n"\
+  dialog --backtitle "$BANNER" \
+    --title "$title" \
+    --msgbox "\n$(cat ./assets/welcome_banner)\n" \
     "$WELCOME_HEIGHT" "$WELCOME_WIDTH"
 }
 
@@ -14,17 +14,16 @@ welcome_banner() {
 # The empty string means no option was picked
 main_menu() {
   local title="[[Where shall we go?]]"
-  dialog --backtitle "$BANNER"\
-    --title "$title"\
-    --cancel-label "EXIT"\
-    --stdout\
-    --menu "UP & DOWN to move selection, TAB to select action"\
-    "$MAIN_MENU_HEIGHT"\
-    "$MAIN_MENU_WIDTH"\
-    "$MAIN_MENU_MENU_HEIGHT"\
-    "<Forums>"    "Explore and participate in forums"\
-    "<Chat>"      "Chat with other users"\
-    "<Change name>"    "Change site settings"
+  dialog --backtitle "$BANNER" \
+    --title "$title" \
+    --cancel-label "EXIT" \
+    --stdout --menu "UP & DOWN to move selection, TAB to select action" \
+    "$MAIN_MENU_HEIGHT" \
+    "$MAIN_MENU_WIDTH" \
+    "$MAIN_MENU_MENU_HEIGHT" \
+    "<Forums>" "Explore and participate in forums" \
+    "<Chat>" "Chat with other users" \
+    "<Change name>" "Change site settings"
 }
 
 # Displays the interface for the chat.
@@ -32,21 +31,16 @@ main_menu() {
 # Returns whatever is introduced into the input box
 chat_interface() {
   local title="[[Chat Feed]]"
-  dialog --backtitle "$BANNER"\
-    --title "$title"\
-    --begin 2 2 --colors\
-    --keep-window\
-    --tailboxbg "$CHAT_FILE"\
-    "$CHAT_FEED_HEIGHT"\
-    "$CHAT_FEED_WIDTH"\
-    --and-widget\
-    --stdout\
-    --begin 32 2\
-    --ok-label "SEND"\
-    --cancel-label "BACK"\
-    --max-input "$CHAT_MSG_MAX_LENGTH"\
-    --inputbox "*Use up arrow to chage focus\n*Empty box is treated as BACK"\
-    "$CHAT_INPUT_HEIGHT"\
+  dialog --backtitle "$BANNER" \
+    --title "$title" \
+    --begin 2 2 --colors --keep-window --tailboxbg "$CHAT_FILE" \
+    "$CHAT_FEED_HEIGHT" \
+    "$CHAT_FEED_WIDTH" \
+    --and-widget --stdout --begin 32 2 --ok-label "SEND" \
+    --cancel-label "BACK" \
+    --max-input "$CHAT_MSG_MAX_LENGTH" \
+    --inputbox "*Use up arrow to chage focus\n*Empty box is treated as BACK" \
+    "$CHAT_INPUT_HEIGHT" \
     "$CHAT_INPUT_WIDTH"
 }
 
@@ -60,15 +54,14 @@ board_selector_menu() {
   local boards=("$@")
   local msg="UP & DOWN to move selection, TAB to select action"
 
-  dialog --backtitle "$BANNER"\
-    --title "$title"\
-    --stdout\
-    --cancel-label "BACK"\
-    --ok-label "SELECT"\
-    --menu "$msg"\
-    "$BOARD_SELECTOR_HEIGHT"\
-    "$BOARD_SELECTOR_WIDTH"\
-    "$BOARD_SELECTOR_MENU_HEIGHT"\
+  dialog --backtitle "$BANNER" \
+    --title "$title" \
+    --stdout --cancel-label "BACK" \
+    --ok-label "SELECT" \
+    --menu "$msg" \
+    "$BOARD_SELECTOR_HEIGHT" \
+    "$BOARD_SELECTOR_WIDTH" \
+    "$BOARD_SELECTOR_MENU_HEIGHT" \
     "${boards[@]}"
 }
 
@@ -88,29 +81,27 @@ thread_selector_meta_menu() {
   fi
 
   local selected_thread
-  selected_thread="$(dialog --backtitle "$BANNER"\
-    --colors\
-    --stdout\
-    --title "$title"\
-    --ok-label "$ok_label"\
-    --cancel-label "BACK"\
-    --menu "$msg"\
-    "$THREAD_SELECTOR_HEIGHT"\
-    "$THREAD_SELECTOR_WIDTH"\
-    "$THREAD_SELECTOR_MENU_HEIGHT"\
+  selected_thread="$(dialog --backtitle "$BANNER" \
+    --colors --stdout --title "$title" \
+    --ok-label "$ok_label" \
+    --cancel-label "BACK" \
+    --menu "$msg" \
+    "$THREAD_SELECTOR_HEIGHT" \
+    "$THREAD_SELECTOR_WIDTH" \
+    "$THREAD_SELECTOR_MENU_HEIGHT" \
     "${threads[@]}")"
 
   ret=$?
   debug "return code -> $ret"
   case "$ret" in
-    0)
-      if [ "EMPTY" = "$selected_thread" ]; then
-        echo "BACK"
-      else
-        echo "$selected_thread" 
-      fi
-      ;;
-    *) echo "BACK" ;;
+  0)
+    if [ "EMPTY" = "$selected_thread" ]; then
+      echo "BACK"
+    else
+      echo "$selected_thread"
+    fi
+    ;;
+  *) echo "BACK" ;;
   esac
 }
 # Displays thread selector menu.
@@ -129,32 +120,30 @@ thread_selector_menu() {
   fi
 
   local selected_thread
-  selected_thread="$(dialog --backtitle "$BANNER"\
-    --colors\
-    --stdout\
-    --title "$title"\
-    --ok-label "$ok_label"\
-    --cancel-label "BACK"\
-    --extra-button --extra-label "NEW THREAD"\
-    --menu "$msg"\
-    "$THREAD_SELECTOR_HEIGHT"\
-    "$THREAD_SELECTOR_WIDTH"\
-    "$THREAD_SELECTOR_MENU_HEIGHT"\
+  selected_thread="$(dialog --backtitle "$BANNER" \
+    --colors --stdout --title "$title" \
+    --ok-label "$ok_label" \
+    --cancel-label "BACK" \
+    --extra-button --extra-label "NEW THREAD" \
+    --menu "$msg" \
+    "$THREAD_SELECTOR_HEIGHT" \
+    "$THREAD_SELECTOR_WIDTH" \
+    "$THREAD_SELECTOR_MENU_HEIGHT" \
     "${threads[@]}")"
 
   ret=$?
   exec 3>&-
   case "$ret" in
-    0)
-      if [ "EMPTY" = "$selected_thread" ]; then
-        echo "BACK"
-      else
-        echo "$selected_thread" 
-      fi
-      ;;
-    1) echo "BACK" ;;
-    3) echo "NEW THREAD" ;;
-    *) echo "BACK" ;;
+  0)
+    if [ "EMPTY" = "$selected_thread" ]; then
+      echo "BACK"
+    else
+      echo "$selected_thread"
+    fi
+    ;;
+  1) echo "BACK" ;;
+  3) echo "NEW THREAD" ;;
+  *) echo "BACK" ;;
   esac
 }
 
@@ -185,16 +174,13 @@ display_thread() {
   fi
 
   local new_reply=true
-  dialog --backtitle "$BANNER"\
-    --title "$title"\
-    --no-collapse\
-    --yes-label "$new_reply_label"\
-    --no-label "BACK"\
-    --colors\
-    --stdout\
-    --yesno "$body" "$THREAD_FEED_HEIGHT" "$THREAD_FEED_WIDTH" || new_reply=false
+  dialog --backtitle "$BANNER" \
+    --title "$title" \
+    --no-collapse --yes-label "$new_reply_label" \
+    --no-label "BACK" \
+    --colors --stdout --yesno "$body" "$THREAD_FEED_HEIGHT" "$THREAD_FEED_WIDTH" || new_reply=false
 
-  if $new_reply;then
+  if $new_reply; then
     echo "NEW REPLY"
   else
     echo "BACK"
@@ -213,14 +199,12 @@ thread_title_form() {
 
   if [ -n "$1" ]; then error="$1"; fi
 
-  dialog --backtitle "$BANNER"\
-    --title "$title"\
-    --stdout\
-    --colors\
-    --ok-label "NEXT"\
-    --max-input "$THREAD_TITLE_MAX_LENGTH"\
-    --inputbox "Between $THREAD_TITLE_MIN_LENGTH and $THREAD_TITLE_MAX_LENGTH characters. Empty string is treated as CANCEL.\n\\Z1\\Zb$error\\Zn"\
-    "$THREAD_TITLE_FORM_HEIGHT"\
+  dialog --backtitle "$BANNER" \
+    --title "$title" \
+    --stdout --colors --ok-label "NEXT" \
+    --max-input "$THREAD_TITLE_MAX_LENGTH" \
+    --inputbox "Between $THREAD_TITLE_MIN_LENGTH and $THREAD_TITLE_MAX_LENGTH characters. Empty string is treated as CANCEL.\n\\Z1\\Zb$error\\Zn" \
+    "$THREAD_TITLE_FORM_HEIGHT" \
     "$THREAD_TITLE_FORM_WIDTH"
 }
 
@@ -236,14 +220,12 @@ user_name_form() {
 
   if [ -n "$1" ]; then error="$1"; fi
 
-  dialog --backtitle "$BANNER"\
-    --title "$title"\
-    --stdout\
-    --colors\
-    --ok-label "NEXT"\
-    --max-input "$USER_NAME_MAX_LENGTH"\
-    --inputbox "Between $USER_NAME_MIN_LENGTH and $USER_NAME_MAX_LENGTH characters. Blank treated as Cancel.\n\\Z1\\Zb$error\\Zn"\
-    "$USER_NAME_FORM_HEIGHT"\
+  dialog --backtitle "$BANNER" \
+    --title "$title" \
+    --stdout --colors --ok-label "NEXT" \
+    --max-input "$USER_NAME_MAX_LENGTH" \
+    --inputbox "Between $USER_NAME_MIN_LENGTH and $USER_NAME_MAX_LENGTH characters. Blank treated as Cancel.\n\\Z1\\Zb$error\\Zn" \
+    "$USER_NAME_FORM_HEIGHT" \
     "$USER_NAME_FORM_WIDTH"
 }
 
@@ -269,21 +251,19 @@ thread_body_form() {
   if [ -n "$2" ]; then error="$2"; fi
   if [ -n "$3" ]; then contents="$3"; fi
 
-  if [ -n "$error" ]; then 
+  if [ -n "$error" ]; then
     title="!! $error !! - $title"
   fi
 
   local target_file="/tmp/$(date +%s%N)"
   touch "$target_file"
-  echo -e "$contents" > "$target_file"
+  echo -e "$contents" >"$target_file"
 
   local result
-  result="$(dialog --backtitle "$BANNER"\
-    --title "$title"\
-    --stdout\
-    --colors\
-    --ok-label "CONFIRM"\
-    --editbox "$target_file"\
+  result="$(dialog --backtitle "$BANNER" \
+    --title "$title" \
+    --stdout --colors --ok-label "CONFIRM" \
+    --editbox "$target_file" \
     "$THREAD_BODY_FORM_HEIGHT" "$THREAD_BODY_FORM_WIDTH")"
 
   rm "$target_file"
@@ -312,24 +292,21 @@ new_reply_form() {
   if [ -n "$2" ]; then error="$2"; fi
   if [ -n "$3" ]; then contents="$3"; fi
 
-  if [ -n "$error" ]; then 
+  if [ -n "$error" ]; then
     title="!! $error !! - $title"
   fi
 
   local target_file="/tmp/$(date +%s%N)"
   touch "$target_file"
-  echo -e "$contents" > "$target_file"
+  echo -e "$contents" >"$target_file"
 
   local result
-  result="$(dialog --backtitle "$BANNER"\
-    --title "$title"\
-    --stdout\
-    --colors\
-    --ok-label "CONFIRM"\
-    --editbox "$target_file"\
+  result="$(dialog --backtitle "$BANNER" \
+    --title "$title" \
+    --stdout --colors --ok-label "CONFIRM" \
+    --editbox "$target_file" \
     "$REPLY_FORM_HEIGHT" "$REPLY_FORM_WIDTH")"
 
   rm "$target_file"
   echo -e "$result"
 }
-
