@@ -117,7 +117,7 @@ highlight_urls_in_thread_body() {
   local url_regex="https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,4}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)"
   local higlight_pattern="\\\\Zb\\\\Zu\\0\\\\Zn"
 
-  echo -E "$1" | sed -E "s/$url_regex/$higlight_pattern/g" 
+  echo -E "$1" | sed -E "s/$url_regex/$higlight_pattern/g"
 }
 
 # Highlight references given a text
@@ -132,7 +132,7 @@ highlight_references_in_thread_boady() {
   local ref_regex="#[0-9]+"
   local higlight_pattern="\\\\Zb\\\\Z5\\0\\\\Zn"
 
-  echo -E "$1" | sed -E "s/$ref_regex/$higlight_pattern/g" 
+  echo -E "$1" | sed -E "s/$ref_regex/$higlight_pattern/g"
 }
 
 # Highlight green text given a text
@@ -147,5 +147,5 @@ highlight_green_text() {
   local green_text_regex=">.+"
   local higlight_pattern="\\\\Zb\\\\Z2\\0\\\\Zn"
 
-  echo -E "$1" | sed -E "s/$green_text_regex/$higlight_pattern/g" 
+  echo -E "$1" | sed -E "s/$green_text_regex/$higlight_pattern/g"
 }

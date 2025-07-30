@@ -32,8 +32,8 @@ export MAX_ACTIVE_THREADS_PER_BOARD=28
 export MAX_REPLIES_PER_THREAD=120
 
 export BANNER="[!]AnalogCity :: Interface v3.0[!]"
-export BOARDS=(\
-  "Board Name" "Description"\
+export BOARDS=(
+  "Board Name" "Description"
 )
 
 # User defualts
@@ -42,7 +42,7 @@ export USER_NAME_MIN_LENGTH=3
 export AUTHOR="pagan"
 export DIALOGRC="./assets/themes/analog.dialogrc"
 if [ -n "$1" ] && [ -f "./assets/themes/$1.dialogrc" ]; then
-  export DIALOGRC="./assets/themes/$1.dialogrc" 
+  export DIALOGRC="./assets/themes/$1.dialogrc"
 fi
 
 # User interface
