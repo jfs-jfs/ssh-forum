@@ -11,21 +11,22 @@ main_controller() {
   welcome_banner
   while $is_running; do
     case $(main_menu) in
-      "<Forums>")
-        debug "forums selected"
-        boards_controller
-        ;;
-      "<Chat>")
-        debug "chat selected"
-        chat_controller
-        ;;
-      "<Change name>")
-        debug "config selected"
-        user_name_controller
-        ;;
-      *)
-        debug "main menu exit"
-        is_running=false
+    "<Forums>")
+      debug "forums selected"
+      boards_controller
+      ;;
+    "<Chat>")
+      debug "chat selected"
+      chat_controller
+      ;;
+    "<Change name>")
+      debug "config selected"
+      user_name_controller
+      ;;
+    *)
+      debug "main menu exit"
+      is_running=false
+      ;;
     esac
   done
 }
@@ -39,21 +40,16 @@ user_name_controller() {
   local new_username=""
 
   while ! $ok_username; do
-    new_username="$(user_name_form "$error" | xargs)"
+    new_username="$(user_name_form "$error" | awk '{$1=$1; print}')"
+    echo "$new_username"
+    read -r
 
-    if [ -z "$new_username" ];then
+    if [ -z "$new_username" ]; then
       return
     fi
 
     # Parse input
-    new_username="$(echo -e "$new_username" | tr -d '\t')"
-    new_username="$(echo -e "$new_username" | tr -d '\a')"
-    new_username="$(echo -e "$new_username" | tr -d '\b')"
-    new_username="$(echo -e "$new_username" | tr -d '\f')"
-    new_username="$(echo -e "$new_username" | tr -d '\n')"
-    new_username="$(echo -e "$new_username" | tr -d '\r')"
-    new_username="$(echo -e "$new_username" | tr -d '\t')"
-    new_username="$(echo -e "$new_username" | tr -d '\v')"
+    new_username="$(printf "%s" "$new_username" | tr -dC '[:print:]')"
 
     if [ ${#new_username} -lt "$USER_NAME_MIN_LENGTH" ]; then
       error="At least $USER_NAME_MIN_LENGTH characters"
@@ -83,26 +79,19 @@ chat_controller() {
     new_message="$(chat_interface)"
 
     # Exit on empty message
-    if [ -z "$new_message" ];then
+    if [ -z "$new_message" ]; then
       exit_chat=true
       continue
     fi
 
     # Parse input
-    new_message="$(echo -e "$new_message" | tr -d '\t')"
-    new_message="$(echo -e "$new_message" | tr -d '\a')"
-    new_message="$(echo -e "$new_message" | tr -d '\b')"
-    new_message="$(echo -e "$new_message" | tr -d '\f')"
-    new_message="$(echo -e "$new_message" | tr -d '\n')"
-    new_message="$(echo -e "$new_message" | tr -d '\r')"
-    new_message="$(echo -e "$new_message" | tr -d '\t')"
-    new_message="$(echo -e "$new_message" | tr -d '\v')"
+    new_message="$(printf "%s" "$new_message" | tr -dC '[:print:]')"
 
     # Format input
     new_message="[$AUTHOR] @ $(date +%x--%X): $new_message"
 
     # Append to chat feed
-    echo -e "$new_message\n" >> "$CHAT_FILE"
+    echo -e "$new_message\n" >>"$CHAT_FILE"
   done
 }
 
@@ -111,7 +100,7 @@ chat_controller() {
 boards_controller() {
 
   local go_back=false
-  while ! $go_back;do
+  while ! $go_back; do
     local selected_board
 
     local boards=("<*>" "The most recently bumped threads" "${BOARDS[@]}")
@@ -133,12 +122,12 @@ boards_controller() {
 # whole of the system
 meta_board_controller() {
   local go_back=false
-  while ! $go_back;do
+  while ! $go_back; do
     shopt -s nullglob
     local thread_files=("./boards/"*"/"*)
     shopt -u nullglob
 
-    if [ -n "${thread_files[*]}" ];then
+    if [ -n "${thread_files[*]}" ]; then
       # Sort them by modification date
       debug "pre sorted thread files -> ${thread_files[*]}"
       IFS=$'\n' thread_files=($(ls -t "${thread_files[@]}"))
@@ -148,7 +137,7 @@ meta_board_controller() {
     fi
 
     # Generate titles out of them
-    mapfile -t thread_titles <<< "$(paths_to_thread_board_titles "${thread_files[@]}")"
+    mapfile -t thread_titles <<<"$(paths_to_thread_board_titles "${thread_files[@]}")"
 
     # Display them and wait for user input
     local selected_thread
@@ -157,11 +146,11 @@ meta_board_controller() {
     # Process input
     debug "Thread selection -> $selected_thread"
     case "$selected_thread" in
-      "BACK") go_back=true ;;
-      "NEW THREAD") thread_creation_controller "$board_dir" ;;
-      *)
-        local clean_thread_file="$(xargs <<< "$selected_thread")"
-        thread_controller "$(dirname "$clean_thread_file")" "$(basename "$clean_thread_file")"
+    "BACK") go_back=true ;;
+    "NEW THREAD") thread_creation_controller "$board_dir" ;;
+    *)
+      local clean_thread_file="$(xargs <<<"$selected_thread")"
+      thread_controller "$(dirname "$clean_thread_file")" "$(basename "$clean_thread_file")"
       ;;
     esac
 
@@ -176,7 +165,6 @@ board_controller() {
     return
   fi
 
-
   local board="$1"
   if [ "$board" = "<*>" ]; then
     meta_board_controller
@@ -186,9 +174,9 @@ board_controller() {
   local board_dir="./boards/$board"
   debug "Board controller for -> $board"
 
-  if [ ! -d "$board_dir" ];then
+  if [ ! -d "$board_dir" ]; then
     debug "Board directory doesnt exist. Creating it! [$board]"
-    mkdir "$board_dir" 
+    mkdir "$board_dir"
   fi
 
   local go_back=false
@@ -200,7 +188,7 @@ board_controller() {
     thread_files=("$board_dir/"*)
     shopt -u nullglob
 
-    if [ -n "${thread_files[*]}" ];then
+    if [ -n "${thread_files[*]}" ]; then
       # Sort them by modification date
       debug "pre sorted thread files -> ${thread_files[*]}"
       IFS=$'\n' thread_files=($(ls -t "${thread_files[@]}"))
@@ -210,7 +198,7 @@ board_controller() {
     fi
 
     # Generate titles out of them
-    mapfile -t thread_titles <<< "$(paths_to_thread_titles "${thread_files[@]}")"
+    mapfile -t thread_titles <<<"$(paths_to_thread_titles "${thread_files[@]}")"
 
     # Display them and wait for user input
     local selected_thread
@@ -219,9 +207,9 @@ board_controller() {
     # Process input
     debug "Thread selection -> $selected_thread"
     case "$selected_thread" in
-      "BACK") go_back=true ;;
-      "NEW THREAD") thread_creation_controller "$board_dir" ;;
-      *) thread_controller "$board_dir" "$(xargs <<< "$selected_thread")" ;;
+    "BACK") go_back=true ;;
+    "NEW THREAD") thread_creation_controller "$board_dir" ;;
+    *) thread_controller "$board_dir" "$(xargs <<<"$selected_thread")" ;;
     esac
   done
 }
@@ -250,7 +238,7 @@ thread_creation_controller() {
   local error=""
 
   while ! $valid_title; do
-    thread_title="$(thread_title_form "$error" | xargs)"
+    thread_title="$(thread_title_form "$error" | awk '{$1=$1; print}')"
 
     if [ -z "$thread_title" ]; then
       info "Empty thread title -> going back!"
@@ -258,25 +246,16 @@ thread_creation_controller() {
     fi
 
     # Parse input
-    thread_title="$(echo -e "$thread_title" | tr -d '\t')"
-    thread_title="$(echo -e "$thread_title" | tr -d '\a')"
-    thread_title="$(echo -e "$thread_title" | tr -d '\b')"
-    thread_title="$(echo -e "$thread_title" | tr -d '\f')"
-    thread_title="$(echo -e "$thread_title" | tr -d '\n')"
-    thread_title="$(echo -e "$thread_title" | tr -d '\r')"
-    thread_title="$(echo -e "$thread_title" | tr -d '\t')"
-    thread_title="$(echo -e "$thread_title" | tr -d '\v')"
-    thread_title="$(echo -e "$thread_title" | tr -d '*')"
-    thread_title="$(echo -e "$thread_title" | tr -d '/')"
+    thread_title="$(printf '%s' "$thread_title" | tr -dC '[:print:]' | tr -d '*/')"
     debug "-> New thread title -> $thread_title"
 
-    if [ ${#thread_title} -gt "$THREAD_TITLE_MAX_LENGTH" ]; then 
+    if [ ${#thread_title} -gt "$THREAD_TITLE_MAX_LENGTH" ]; then
       error "thread title too long!"
       error="The title is longer than $THREAD_TITLE_MAX_LENGTH chars"
       continue
     fi
 
-    if [ ${#thread_title} -lt "$THREAD_TITLE_MIN_LENGTH" ]; then 
+    if [ ${#thread_title} -lt "$THREAD_TITLE_MIN_LENGTH" ]; then
       error "thread title too short"
       error="The title is shorter than $THREAD_TITLE_MIN_LENGTH chars"
       continue
@@ -321,7 +300,7 @@ thread_creation_controller() {
   done
 
   touch "$new_thread_file"
-  echo -e "0\n$AUTHOR\n$(date '+%x %X')\n\n$thread_body\n" >> "$new_thread_file"
+  echo -e "0\n$AUTHOR\n$(date '+%x %X')\n\n$thread_body\n" >>"$new_thread_file"
 
   if [ "$(ls | wc -l)" -gt "$MAX_ACTIVE_THREADS_PER_BOARD" ]; then
     local oldest_file
@@ -365,16 +344,16 @@ thread_controller() {
     replies="$(thread_file_to_thread_replies "$thread_file")"
 
     local locked_thread=false
-    if [ "$replies" -gt "$MAX_REPLIES_PER_THREAD" ];then locked_thread=true; fi
+    if [ "$replies" -gt "$MAX_REPLIES_PER_THREAD" ]; then locked_thread=true; fi
 
     local action
     action="$(display_thread "$title" "$thread_body" "$locked_thread")"
 
     debug "$action"
     case "$action" in
-      "BACK") go_back=true ;;
-      "NEW REPLY") new_reply_controller "$thread_file";;
-      *) error "How the fuck did I even end here?!!" ;;
+    "BACK") go_back=true ;;
+    "NEW REPLY") new_reply_controller "$thread_file" ;;
+    *) error "How the fuck did I even end here?!!" ;;
     esac
 
   done
@@ -432,10 +411,10 @@ new_reply_controller() {
 
   # Worth to queue writings to file for race conditions? Meeh
   # Update replies
-  local next_reply_number=$((thread_replies+1))
+  local next_reply_number=$((thread_replies + 1))
   sed -i "1s/.*/$next_reply_number/" "$filepath"
 
   # Add reply
   reply_body="$(echo "$reply_body" | sed -e 's/^/ /')"
-  echo -e "\Z5[[$AUTHOR :: $(date '+%x %X') :: #$next_reply_number]]\Zn\n$reply_body\Zn\n" >> "$filepath"
+  echo -e "\Z5[[$AUTHOR :: $(date '+%x %X') :: #$next_reply_number]]\Zn\n$reply_body\Zn\n" >>"$filepath"
 }
