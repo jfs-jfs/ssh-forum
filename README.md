@@ -57,7 +57,6 @@ And then run from inside the project folder:
 ```bash
 docker build -t ssh-forum . && docker run -d -p 2222:2222\
     -v "$(pwd)/boards:/usr/src/app/boards:rw"\
-    -v "$(pwd)/archive:/usr/src/app/archive:rw"\
     ssh-forum
 ```
 

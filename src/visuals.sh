@@ -169,7 +169,7 @@ display_thread() {
   local new_reply_label
 
   if $is_blocked; then
-    new_reply_label="BACK"
+    new_reply_label="MAXED OUT REPLIES"
   else
     new_reply_label="NEW REPLY"
   fi
@@ -181,8 +181,8 @@ display_thread() {
     --no-label "BACK" \
     --colors --stdout --yesno "$body" "$THREAD_FEED_HEIGHT" "$THREAD_FEED_WIDTH" || new_reply=false
 
-  if $new_reply; then
-    echo "NEW REPLY"
+  if $new_reply && ! $is_blocked; then
+    echo "NEW THREAD"
   else
     echo "BACK"
   fi
