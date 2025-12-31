@@ -182,7 +182,7 @@ display_thread() {
     --colors --stdout --yesno "$body" "$THREAD_FEED_HEIGHT" "$THREAD_FEED_WIDTH" || new_reply=false
 
   if $new_reply && ! $is_blocked; then
-    echo "NEW THREAD"
+    echo "NEW REPLY"
   else
     echo "BACK"
   fi
