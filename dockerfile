@@ -18,4 +18,7 @@ RUN go mod download && go mod verify
 COPY . .
 RUN go build -v -o ssh-server server.go
 
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+
 CMD ["./ssh-server"]
