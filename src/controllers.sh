@@ -23,12 +23,62 @@ main_controller() {
       debug "config selected"
       user_name_controller
       ;;
+    "<Archive>")
+      debug "archive selected"
+      archive_controller
+      ;;
     *)
       debug "main menu exit"
       is_running=false
       ;;
     esac
   done
+}
+
+# Controller to search through archived files
+archive_controller() {
+  local exit_archive=false
+  local selected_file
+  while ! $exit_archive; do
+
+    local archived_files
+    mapfile -d $'\0' archived_files < <(find "./$ARCHIVE" -type f -print0)
+
+    selected_file="$(
+      gum filter --placeholder="Write to filter, UP & DOWN to move, ENTER to select and ESC to go back" \
+        --indicator="->" \
+        --sort --reverse --prompt="[ Search >] " \
+        --prompt.foreground=212 --cursor-text.foreground=75 "${archived_files[@]}"
+    )"
+    if [ -z "$selected_file" ]; then
+      exit_archive=true
+      continue
+    fi
+
+    archived_thread_controller "$selected_file"
+  done
+}
+
+# Controller to display an archived thread
+# Arguments:
+#   - Archived thread path
+archived_thread_controller() {
+  if [ $# -ne 1 ]; then
+    error "Missing archived thread file to display!"
+    return
+  fi
+
+  if [ ! -f "$1" ]; then
+    error "Archived thread file does not exist! -> $1"
+    return
+  fi
+
+  local title
+  local contents
+  title="[ Archived ] :: [ $(basename "$1") ]"
+  contents="$(cat "$1")"
+
+  display_thread "$title" "$contents" true
 }
 
 # User name controller

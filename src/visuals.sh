@@ -10,7 +10,7 @@ welcome_banner() {
 }
 
 # Displays the main menu and returns the option picked by the user.
-# The return values can be: "<Forums>", "<Chat>", "<Change name>" and "".
+# The return values can be: "<Forums>", "<Chat>", "<Change name>", "<Archive>" and "".
 # The empty string means no option was picked
 main_menu() {
   local title="[[Where shall we go?]]"
@@ -23,6 +23,7 @@ main_menu() {
     "$MAIN_MENU_MENU_HEIGHT" \
     "<Forums>" "Explore and participate in forums" \
     "<Chat>" "Chat with other users" \
+    "<Archive>" "Explore the lost threads" \
     "<Change name>" "Change site settings"
 }
 
@@ -181,7 +182,7 @@ display_thread() {
     --colors --stdout --yesno "$body" "$THREAD_FEED_HEIGHT" "$THREAD_FEED_WIDTH" || new_reply=false
 
   if $new_reply && ! $is_blocked; then
-    echo "NEW THREAD"
+    echo "NEW REPLY"
   else
     echo "BACK"
   fi
