@@ -24,6 +24,7 @@ main_menu() {
     "<Forums>" "Explore and participate in forums" \
     "<Chat>" "Chat with other users" \
     "<Archive>" "Explore the lost threads" \
+    "<Phrack>" "Mirror of phrack.org" \
     "<Change name>" "Change site settings"
 }
 
@@ -177,6 +178,7 @@ display_thread() {
   local new_reply=true
   dialog --backtitle "$BANNER" \
     --title "$title" \
+    --no-nl-expand \
     --no-collapse --yes-label "$new_reply_label" \
     --no-label "BACK" \
     --colors --stdout --yesno "$body" "$THREAD_FEED_HEIGHT" "$THREAD_FEED_WIDTH" || new_reply=false

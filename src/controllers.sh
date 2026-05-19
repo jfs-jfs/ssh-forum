@@ -25,7 +25,11 @@ main_controller() {
       ;;
     "<Archive>")
       debug "archive selected"
-      archive_controller
+      archive_controller "./archive"
+      ;;
+    "<Phrack>")
+      debug "phrack archive selected"
+      archive_controller "./phrack"
       ;;
     *)
       debug "main menu exit"
@@ -39,10 +43,14 @@ main_controller() {
 archive_controller() {
   local exit_archive=false
   local selected_file
+  local archive_directory="$ARCHIVE"
+
+  [[ -n ${1} ]] && archive_directory="$1"
+
   while ! $exit_archive; do
 
     local archived_files
-    mapfile -d $'\0' archived_files < <(find "./$ARCHIVE" -type f -print0)
+    mapfile -d $'\0' archived_files < <(find "$archive_directory" -type f -print0)
 
     selected_file="$(
       gum filter --placeholder="Write to filter, UP & DOWN to move, ENTER to select and ESC to go back" \
@@ -56,6 +64,8 @@ archive_controller() {
     fi
 
     archived_thread_controller "$selected_file"
+
+    # display_file "$selected_file"
   done
 }
 
